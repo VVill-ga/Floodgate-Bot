@@ -1,3 +1,4 @@
 **/secret.py
 discord.log
 **/__pycache__
+bot.db

@@ -8,6 +8,8 @@ class DbWrapper:
 
         stmt = """create table if not exists members (
             id text not null,
+            username text not null,
+            email text,
             token text not null,
             verified integer not null default 0
         );"""
@@ -15,13 +17,12 @@ class DbWrapper:
         self.c.execute(stmt)
 
     def close(self):
-        print("closing db")
         self.conn.commit()
         self.conn.close()
 
-    def new_member(self, id, token):
-        stmt = "insert into members (id, token) values (?, ?);"
-        vars = (id, token)
+    def new_member(self, id, username, token):
+        stmt = "insert into members (id, username, token) values (?, ?, ?);"
+        vars = (id, username, token)
 
         rows = self.c.execute(stmt, vars).rowcount
         self.conn.commit()
@@ -39,6 +40,34 @@ class DbWrapper:
         stmt = "select token from members where id = ?;"
         vars = (id,)
 
-        token = self.c.execute(stmt, vars).fetchone()[0]
+        try:
+            token = self.c.execute(stmt, vars).fetchone()[0]
+            self.conn.commit()
+            return token
+        except:
+            return ""
+
+    def set_email(self, id, email):
+        stmt = "update members set email = ? where id = ?;"
+        vars = (email, id)
+
+        rows = self.c.execute(stmt, vars).rowcount
         self.conn.commit()
-        return token
+        return rows
+
+    def prompted(self, id):
+        stmt = "update members set prompted = 1 where id = ?;"
+        vars = (id,)
+
+        rows = self.c.execute(stmt, vars).rowcount
+        self.conn.commit()
+        return rows
+
+    def is_user_verified(self, id):
+        stmt = "select verified from members where id = ?;"
+        vars = (id,)
+
+        try:
+            return self.c.execute(stmt, vars).fetchone()[0] == 1
+        except:
+            return False

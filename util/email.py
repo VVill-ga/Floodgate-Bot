@@ -4,13 +4,16 @@ import textwrap
 
 from secret import EMAIL_USERNAME, EMAIL_PASSWORD
 
-def validate_email(address):
+def is_valid_email(address):
     valid_domains = [
         "oregonstate.edu",
         "onid.orst.edu"
     ]
-
-    return address.split("@")[1] in valid_domains
+    
+    try:
+        return address.split("@")[1] in valid_domains
+    except:
+        return False
 
 def send_confirmation(address, token):
     body = """\
