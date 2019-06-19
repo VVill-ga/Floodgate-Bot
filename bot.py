@@ -2,7 +2,7 @@ import discord
 import logging
 import hashlib
 
-from secret import SERVER_ID, VERIFIED_ROLE_ID, DISCORD_CLIENT_TOKEN, generate_token
+from config import SERVER_ID, VERIFIED_ROLE_ID, ADMIN_ROLE_ID, VALID_ROLES, DISCORD_CLIENT_TOKEN, generate_token
 from util import db, email
 
 logger = logging.getLogger('discord')

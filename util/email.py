@@ -2,7 +2,7 @@ from email.message import EmailMessage
 import smtplib
 import textwrap
 
-from secret import EMAIL_USERNAME, EMAIL_PASSWORD
+from config import EMAIL_SERVER, EMAIL_USERNAME, EMAIL_PASSWORD
 
 def is_valid_email(address):
     valid_domains = [
@@ -25,12 +25,12 @@ def send_confirmation(address, token):
         """.format(token=token)
 
     msg = EmailMessage()
-    msg['From'] = "noreply@osusec.org"
+    msg['From'] = EMAIL_USERNAME
     msg['To'] = address
     msg['Subject'] = "OSUSEC Discord Email Confirmation"
 
     msg.set_content(textwrap.dedent(body))
 
-    with smtplib.SMTP_SSL("secure234.inmotionhosting.com", 465) as server:
+    with smtplib.SMTP_SSL(EMAIL_SERVER, 465) as server:
         server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
         server.send_message(msg)
