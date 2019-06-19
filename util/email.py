@@ -2,16 +2,11 @@ from email.message import EmailMessage
 import smtplib
 import textwrap
 
-from config import EMAIL_SERVER, EMAIL_USERNAME, EMAIL_PASSWORD
+from config import EMAIL_SERVER, EMAIL_USERNAME, EMAIL_PASSWORD, VALID_EMAIL_DOMAINS
 
 def is_valid_email(address):
-    valid_domains = [
-        "oregonstate.edu",
-        "onid.orst.edu"
-    ]
-    
     try:
-        return address.split("@")[1] in valid_domains
+        return address.split("@")[1] in VALID_EMAIL_DOMAINS
     except:
         return False
 

@@ -6,7 +6,7 @@ from config import SERVER_ID, VERIFIED_ROLE_ID, ADMIN_ROLE_ID, VALID_ROLES, DISC
 from util import db, email
 
 logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
@@ -72,6 +72,11 @@ async def on_message(message):
                     await message.channel.send('Invalid email or token. Make sure to provide your OSU email address')
 
         print("got dm from {0.name}#{0.discriminator}: {1}".format(message.author, message.content))
+    
+    else:
+        # we aren't in a DM
+        pass
+
 
     if message.content.startswith('!ping'):
         await message.channel.send('pong')
