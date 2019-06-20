@@ -61,7 +61,6 @@ async def on_message(message):
 
                     # this person had that message as their token, they are now verified
 
-                    # TODO add the "Member" role
                     server_member = server.get_member(message.author.id)
                     await server_member.add_roles(verified_role)
                     await message.channel.send("Thank you for verifying. I've updated your roles, and you should be able to get access to all of the channels now.")
@@ -75,7 +74,31 @@ async def on_message(message):
     
     else:
         # we aren't in a DM
-        pass
+
+        # role adding
+        if message.content.startswith("!role"):
+            split = message.content.split(" ")
+            action = split[1]
+
+            # make sure we have a valid command
+            if action not in ["add", "remove"]:
+                await message.channel.send("Invalid role command. Valid commands are `add` and `remove`.")
+            else:
+
+                # make sure user is verified
+                if discord.utils.get(message.author.roles, id=VERIFIED_ROLE_ID) is not None:
+
+                    # user is verified
+                    role_name = " ".join(split[2:])
+
+                    # make sure requested role is valid
+                    if role_name in VALID_ROLES:
+                        await message.author.add_roles(discord.utils.get(server.roles, id=VALID_ROLES[role_name]))
+                        await message.channel.send("Added role")
+                else:
+
+                    # user isn't verified
+                    await message.channel.send("User isn't verified. Please verify before requesting roles")
 
 
     if message.content.startswith('!ping'):

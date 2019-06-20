@@ -2,7 +2,7 @@ SERVER_ID = 1234
 VERIFIED_ROLE_ID = 1234
 ADMIN_ROLE_ID = 1234
 
-VALID_ROLES = [{"name": "role1", "id": 1234}, {"name": "role2", "id": 1234}] # can add more
+VALID_ROLES = {"role1": 1234, "role2": 1234}
 
 DISCORD_CLIENT_TOKEN = 'tokentokentoken'
 
