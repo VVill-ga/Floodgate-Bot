@@ -1,2 +1,2 @@
 discord.py
-sqlite3
+pyutil
