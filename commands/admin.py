@@ -28,8 +28,8 @@ async def ctf(message):
 
     ctf_category = discord.utils.get(config.guild.categories, name="CTF")
     assert(ctf_category is not None)
-    channel = await config.guild.create_text_channel(name, category=ctf_category)
+    channel = await config.guild.create_text_channel(name, category=ctf_category, position=2)
 
-    await channel.edit(sync_permissions=True, position=2)
+    # await channel.edit(sync_permissions=True, position=2)
 
-    await send_success(message.channel, "Channel created", "New CTF channel created: #{}".format(name))
+    await send_success(message.channel, "Channel created", "New CTF channel created: #{}".format(channel.name))
