@@ -64,16 +64,6 @@ async def on_message(message):
             return
 
         # handle command
-        if discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
-            # admin commands
-            if message.content.startswith("!upgrade"):
-                await admin.upgrade(message)
-            elif message.content.startswith("!restart"):
-                await admin.restart(message)
-            elif message.content.startswith("!stop"):
-                await admin.stop(message)
-            elif message.content.startswith("!ctf"):
-                await admin.ctf(message)
         if message.content.startswith("!ping"):
             await channel.ping(message)
         elif message.content.startswith("!roles"):
@@ -84,6 +74,18 @@ async def on_message(message):
             await channel.help(message)
         elif message.content.startswith("!git"):
             await channel.git(message)
+        elif discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
+            # admin commands
+            if message.content.startswith("!upgrade"):
+                await admin.upgrade(message)
+            elif message.content.startswith("!restart"):
+                await admin.restart(message)
+            elif message.content.startswith("!stop"):
+                await admin.stop(message)
+            elif message.content.startswith("!ctf"):
+                await admin.ctf(message)
+            else:
+                await send_error(message.channel, "Invalid command (!help)")
         else:
             await send_error(message.channel, "Invalid command (!help)")
 
