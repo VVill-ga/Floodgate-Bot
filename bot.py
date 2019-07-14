@@ -4,7 +4,7 @@ import os
 import signal
 import sys
 
-from commands import dm, channel
+from commands import dm, channel, admin
 import config
 from util import DbWrapper
 from util.func import *  # pylint: disable=unused-wildcard-import
@@ -31,15 +31,15 @@ async def on_ready():
     game = discord.Game("CTF")
     await client.change_presence(status=discord.Status.online, activity=game)
 
-    # get server and verified role objects so we can add member roles once they are verified
-    config.server = client.get_guild(config.SERVER_ID)
-    assert(config.server is not None)
+    # get guild and verified role objects so we can add member roles once they are verified
+    config.guild = client.get_guild(config.SERVER_ID)
+    assert(config.guild is not None)
 
-    config.verified_role = discord.utils.get(config.server.roles, id=config.VERIFIED_ROLE_ID)
+    config.verified_role = discord.utils.get(config.guild.roles, id=config.VERIFIED_ROLE_ID)
     assert(config.verified_role is not None)
 
     # get bot channel to provide status updates
-    config.bot_channel = discord.utils.get(config.server.channels, id=config.BOT_CHANNEL_ID)
+    config.bot_channel = discord.utils.get(config.guild.channels, id=config.BOT_CHANNEL_ID)
 
     if "restart" in sys.argv:
         await send_embed(config.bot_channel, "Bot restarted")
@@ -67,11 +67,11 @@ async def on_message(message):
         if discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
             # admin commands
             if message.content.startswith("!upgrade"):
-                await channel.upgrade(message)
+                await admin.upgrade(message)
             elif message.content.startswith("!restart"):
-                await channel.restart(message)
+                await admin.restart(message)
             elif message.content.startswith("!stop"):
-                await channel.stop(message)
+                await admin.stop(message)
         if message.content.startswith("!ping"):
             await channel.ping(message)
         elif message.content.startswith("!roles"):

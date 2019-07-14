@@ -16,7 +16,7 @@ async def handle_dm(message):
             if db.get_email(message.author.id) == message.content:
                 # email checks out
                 await message.channel.send("This accout is already verified, re-adding Member role")
-                server_member = config.server.get_member(message.author.id)
+                server_member = config.guild.get_member(message.author.id)
                 await server_member.add_roles(config.verified_role)
             else:
                 # wrong email
@@ -31,7 +31,7 @@ async def handle_dm(message):
     # maybe it's a token?
     elif db.verify_member(message.author.id, message.content) == 1:
         # this person had that message as their token, they are now verified
-        server_member = config.server.get_member(message.author.id)
+        server_member = config.guild.get_member(message.author.id)
         await server_member.add_roles(config.verified_role)
 
         await message.channel.send("Thank you for verifying. I've updated your roles, and you should be able to get access to all of the channels now.")

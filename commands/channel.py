@@ -37,10 +37,10 @@ async def role(message):
         # make sure requested role is valid
         if role_name in config.VALID_ROLES:
             if action == "add":
-                await message.author.add_roles(discord.utils.get(config.server.roles, id=config.VALID_ROLES[role_name]))
+                await message.author.add_roles(discord.utils.get(config.guild.roles, id=config.VALID_ROLES[role_name]))
                 await send_success(message.channel, "Added role")
             elif action == "remove":
-                await message.author.remove_roles(discord.utils.get(config.server.roles, id=config.VALID_ROLES[role_name]))
+                await message.author.remove_roles(discord.utils.get(config.guild.roles, id=config.VALID_ROLES[role_name]))
                 await send_success(message.channel, "Removed role")
 
 async def roles(message):
@@ -68,23 +68,3 @@ async def help(message):
         """
     
     await send_embed(message.channel, "Help", textwrap.dedent(txt))
-
-######################
-### ADMIN COMMANDS ###
-######################
-
-async def restart(message):
-    await send_warning(message.channel, "Restarting bot")
-    await restart_bot("restart")
-
-async def upgrade(message):
-    await send_embed(message.channel, "Pulling latest version from origin/master (may take a little while)")
-    get_stdout("git pull", timeout=20)
-
-    await send_warning(message.channel, "Restarting bot")
-    await restart_bot("upgrade")
-
-async def stop(message):
-    await send_error(message.channel, "Stopping bot")
-    await config.client.close()
-    sys.exit(0)
