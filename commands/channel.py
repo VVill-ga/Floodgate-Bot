@@ -1,8 +1,13 @@
 import discord
 import textwrap
+import sys
 
 import config
 from util.func import *  # pylint: disable=unused-wildcard-import
+
+#####################
+### USER COMMANDS ###
+#####################
 
 async def ping(message):
     await send_embed(message.channel, "Pong!")
@@ -41,6 +46,12 @@ async def role(message):
 async def roles(message):
     await send_embed(message.channel, "Valid roles for OSU Security Club", "\n".join(list(config.VALID_ROLES.keys())))
 
+async def git(message):
+    commit = get_stdout("git rev-parse HEAD")[:7]
+    url = get_stdout("git remote get-url origin")
+
+    await send_embed(message.channel, "Git Info", "Running commit {} from {}".format(commit, url))
+
 async def help(message):
     txt = """\
         Valid commands:
@@ -48,6 +59,32 @@ async def help(message):
         * `role`
         * `ping`
         * `help`
+        * `git`
+
+        Admin commands:
+        * `upgrade`
+        * `restart`
+        * `stop`
         """
     
     await send_embed(message.channel, "Help", textwrap.dedent(txt))
+
+######################
+### ADMIN COMMANDS ###
+######################
+
+async def restart(message):
+    await send_warning(message.channel, "Restarting bot")
+    await restart_bot("restart")
+
+async def upgrade(message):
+    await send_embed(message.channel, "Pulling latest version from origin/master (may take a little while)")
+    get_stdout("git pull", timeout=20)
+
+    await send_warning(message.channel, "Restarting bot")
+    await restart_bot("upgrade")
+
+async def stop(message):
+    await send_error(message.channel, "Stopping bot")
+    await config.client.close()
+    sys.exit(0)

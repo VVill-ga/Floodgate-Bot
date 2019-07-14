@@ -1,7 +1,8 @@
 import discord
 import logging
-import hashlib
-import random
+import os
+import signal
+import sys
 
 from commands import dm, channel
 import config
@@ -16,6 +17,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 client = discord.Client()
+config.client = client
 db = DbWrapper()
 
 ######################
@@ -36,6 +38,14 @@ async def on_ready():
     config.verified_role = discord.utils.get(config.server.roles, id=config.VERIFIED_ROLE_ID)
     assert(config.verified_role is not None)
 
+    # get bot channel to provide status updates
+    config.bot_channel = discord.utils.get(config.server.channels, id=config.BOT_CHANNEL_ID)
+
+    if "restart" in sys.argv:
+        await send_embed(config.bot_channel, "Bot restarted")
+    if "upgrade" in sys.argv:
+        await send_embed(config.bot_channel, "Bot upgraded, running commit {}".format(get_stdout("git rev-parse HEAD")[:7]))
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -54,6 +64,14 @@ async def on_message(message):
             return
 
         # handle command
+        if discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
+            # admin commands
+            if message.content.startswith("!upgrade"):
+                await channel.upgrade(message)
+            elif message.content.startswith("!restart"):
+                await channel.restart(message)
+            elif message.content.startswith("!stop"):
+                await channel.stop(message)
         if message.content.startswith("!ping"):
             await channel.ping(message)
         elif message.content.startswith("!roles"):
@@ -62,6 +80,8 @@ async def on_message(message):
             await channel.role(message)
         elif message.content.startswith("!help"):
             await channel.help(message)
+        elif message.content.startswith("!git"):
+            await channel.git(message)
         else:
             await send_error(message.channel, "Invalid command (!help)")
 
@@ -76,5 +96,6 @@ async def on_member_join(member):
 
     await member.send("Welcome to the OSU Security Club Discord Server! In order to gain full server access, you'll need to verify your email address. Please send me your Oregon State email address")
 
+config.main_path = os.path.join(os.path.abspath(""), sys.argv[0])
 client.run(config.DISCORD_CLIENT_TOKEN)
 db.close()
