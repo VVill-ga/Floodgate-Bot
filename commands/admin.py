@@ -23,7 +23,7 @@ async def ctf(message):
     try:
         name = message.content.split(" ")[1]
     except:
-        send_error(message.channel, "Error", "Usage: `!ctf [ctf name]`")
+        await send_error(message.channel, "Error", "Usage: `!ctf [ctf name]`")
         return
 
     ctf_category = discord.utils.get(config.guild.categories, name="CTF")
