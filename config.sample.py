@@ -20,3 +20,6 @@ VALID_EMAIL_DOMAINS = ["example.com"]
 # Below are set dynamically
 server = None
 verified_role = None
+bot_channel = None
+main_path = None
+client = None
