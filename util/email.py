@@ -6,7 +6,7 @@ from config import EMAIL_SERVER, EMAIL_USERNAME, EMAIL_PASSWORD, VALID_EMAIL_DOM
 
 def is_valid_email(address):
     try:
-        return address.split("@")[1] in VALID_EMAIL_DOMAINS
+        return len(address.split("@")) == 2 and address.split("@")[1] in VALID_EMAIL_DOMAINS and "," not in address
     except:
         return False
 
