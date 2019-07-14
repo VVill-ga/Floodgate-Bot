@@ -37,6 +37,17 @@ class DbWrapper:
             self.conn.commit()
             return rows
 
+        def get_email(self, id):
+            stmt = "select email from members where id = ?;"
+            vars = (id,)
+
+            try:
+                email = self.c.execute(stmt, vars).fetchone()[0]
+                self.conn.commit()
+                return email 
+            except:
+                return ""
+
         def get_token(self, id):
             stmt = "select token from members where id = ?;"
             vars = (id,)
