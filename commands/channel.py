@@ -62,6 +62,7 @@ async def help(message):
         * `git`
 
         Admin commands:
+        * `ctf`
         * `upgrade`
         * `restart`
         * `stop`

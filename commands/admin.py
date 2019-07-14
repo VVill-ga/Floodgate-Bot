@@ -20,7 +20,11 @@ async def stop(message):
     sys.exit(0)
 
 async def ctf(message):
-    name = message.content.split(" ")[1]
+    try:
+        name = message.content.split(" ")[1]
+    except:
+        send_error(message.channel, "Error", "Usage: `!ctf [ctf name]`")
+        return
 
     ctf_category = discord.utils.get(config.guild.categories, name="CTF")
     assert(ctf_category is not None)
