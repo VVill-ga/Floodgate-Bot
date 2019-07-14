@@ -8,12 +8,12 @@ import config
 from util import DbWrapper
 from util.func import *  # pylint: disable=unused-wildcard-import
 
-logging.basicConfig(level=logging.INFO)
-# logger = logging.getLogger('discord')
-# logger.setLevel(logging.INFO)
-# handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-# handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-# logger.addHandler(handler)
+# logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 client = discord.Client()
 db = DbWrapper()
@@ -24,7 +24,7 @@ db = DbWrapper()
 
 @client.event
 async def on_ready():
-    logging.info('We have logged in as {0.user}'.format(client))
+    logger.info('We have logged in as {0.user}'.format(client))
 
     game = discord.Game("CTF")
     await client.change_presence(status=discord.Status.online, activity=game)
@@ -43,7 +43,7 @@ async def on_message(message):
 
     # check if we got a DM
     if message.channel.type == discord.ChannelType.private:
-        logging.info("got dm from {0.name}#{0.discriminator}: {1}".format(message.author, message.content))
+        logger.info("got dm from {0.name}#{0.discriminator}: {1}".format(message.author, message.content))
         await dm.handle_dm(message)
     
     else:
@@ -56,14 +56,14 @@ async def on_message(message):
         # handle command
         if message.content.startswith("!ping"):
             await channel.ping(message)
-        elif message.content.startswith("!role "):
-            await channel.role(message)
         elif message.content.startswith("!roles"):
             await channel.roles(message)
+        elif message.content.startswith("!role"):
+            await channel.role(message)
         elif message.content.startswith("!help"):
-            pass
+            await channel.help(message)
         else:
-            await message.channel.send("Invalid command (!help)")
+            await send_error(message.channel, "Invalid command (!help)")
 
 @client.event
 async def on_member_join(member):
