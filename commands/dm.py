@@ -15,7 +15,7 @@ async def handle_dm(message):
             # check if email is the same, if yes, re-add member
             if db.get_email(message.author.id) == message.content:
                 # email checks out
-                await message.channel.send("This accout is already verified, re-adding Member role")
+                await message.channel.send("This account is already verified, re-adding Member role")
                 server_member = config.guild.get_member(message.author.id)
                 await server_member.add_roles(config.verified_role)
             else:
