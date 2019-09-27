@@ -66,6 +66,8 @@ async def on_message(message):
         # handle command
         if message.content.startswith("!ping"):
             await channel.ping(message)
+        elif message.content.startswith("!yeet"):
+            await channel.yeet(message)
         elif message.content.startswith("!roles"):
             await channel.roles(message)
         elif message.content.startswith("!role"):
