@@ -1,6 +1,7 @@
 import discord
 import textwrap
 import sys
+import random
 
 import config
 from util.func import *  # pylint: disable=unused-wildcard-import
@@ -52,12 +53,26 @@ async def git(message):
 
     await send_embed(message.channel, "Git Info", "Running commit {} from {}".format(commit, url))
 
+async def yeet(message):
+    choices = [
+        "lyell read says \"yote\"",
+        "https://tenor.com/view/yeet-rafiki-simba-lion-king-gif-12559094",
+        "https://tenor.com/view/big-yeet-spinning-gif-11694855",
+        "https://tenor.com/view/dab-dancing-idgaf-gif-5661979",
+        "https://tenor.com/view/yeet-fortnite-dance-lazerbeem-dance-gif-14816618"
+    ]
+
+    msg = random.choice(choices)
+
+    await message.channel.send(msg)
+
 async def help(message):
     txt = """\
         Valid commands:
         * `roles`
         * `role`
         * `ping`
+        * `yeet`
         * `help`
         * `git`
 
