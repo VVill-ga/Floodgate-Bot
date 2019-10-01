@@ -3,6 +3,7 @@ import textwrap
 import sys
 import random
 import requests
+from cowpy import cow
 
 import config
 from util.func import *  # pylint: disable=unused-wildcard-import
@@ -121,6 +122,16 @@ async def gitlab(message):
 
     await send_success(message.channel, "GitLab success", "Successfully added `{}` to the GitLab group".format(gitlab_username))
 
+async def cowsay(message):
+    try:
+        text = " ".join(message.split(" ")[1:])
+    except:
+        await send_error(message.channel, "Need something to cowsay")
+
+    mycow = cow.Small()
+
+    await message.channel.send(mycow.milk(text))
+
 async def help(message):
     txt = """\
         Valid commands:
@@ -131,6 +142,7 @@ async def help(message):
         * `help`
         * `git`
         * `gitlab`
+        * `cowsay`
 
         Admin commands:
         * `ctf`
