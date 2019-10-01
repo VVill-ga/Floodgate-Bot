@@ -96,7 +96,7 @@ class DbWrapper:
             vars = (id,)
 
             try:
-                return self.c.execute(stmt, vars).rowcount >= 1
+                return len(self.c.execute(stmt, vars).fetchall()) >= 1
             except:
                 return False
 
