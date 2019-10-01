@@ -5,6 +5,9 @@ import random
 
 import config
 from util.func import *  # pylint: disable=unused-wildcard-import
+from util import DbWrapper
+
+db = DbWrapper()
 
 #####################
 ### USER COMMANDS ###
@@ -65,6 +68,20 @@ async def yeet(message):
     msg = random.choice(choices)
 
     await message.channel.send(msg)
+
+async def gitlab(message):
+    # check if user already is registered for gitlab
+    if db.is_user_gitlab_registered(message.author.id):
+        await send_error(message.channel, "GitLab error", "User already registered for GitLab group")
+        return
+
+    # make sure user is ctf
+    if discord.utils.get(message.author.roles, id=config.VALID_ROLES["CTF"]) is None:
+        await send_error(message.channel "GitLab error", "User doesn't have CTF role")
+        return
+
+    # do api stuff
+
 
 async def help(message):
     txt = """\
