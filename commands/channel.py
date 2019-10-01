@@ -130,7 +130,7 @@ async def cowsay(message):
 
     mycow = cow.Small()
 
-    await message.channel.send("```\nmycow.milk(text)```")
+    await message.channel.send("```\n{}```".format(mycow.milk(text)))
 
 async def help(message):
     txt = """\
