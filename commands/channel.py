@@ -124,7 +124,7 @@ async def gitlab(message):
 
 async def cowsay(message):
     try:
-        text = " ".join(message.split(" ")[1:])
+        text = " ".join(message.content.split(" ")[1:])
     except:
         await send_error(message.channel, "Need something to cowsay")
 
