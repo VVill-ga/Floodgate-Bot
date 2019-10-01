@@ -17,6 +17,13 @@ class DbWrapper:
 
             self.c.execute(stmt)
 
+            stmt = """create table if not exists gitlab (
+                id text not null,
+                gitlab text not null
+            );"""
+
+            self.c.execute(stmt)
+
         def close(self):
             self.conn.commit()
             self.conn.close()
@@ -83,6 +90,23 @@ class DbWrapper:
                 return self.c.execute(stmt, vars).fetchone()[0] == 1
             except:
                 return False
+
+        def is_user_gitlab_registered(self, id):
+            stmt = "select gitlab from gitlab where id = ?;"
+            vars = (id,)
+
+            try:
+                return self.c.execute(stmt, vars).fetchone()[0] == 1
+            except:
+                return False
+
+        def register_user_gitlab(self, id, gitlab):
+            stmt = "insert into gitlab (id, gitlab) values (?, ?);"
+            vars = (id, gitlab)
+
+            rows = self.c.execute(stmt, vars).rowcount
+            self.conn.commit()
+            return rows
 
     # Singleton definitions
     # https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
