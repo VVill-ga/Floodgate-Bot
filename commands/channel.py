@@ -2,9 +2,13 @@ import discord
 import textwrap
 import sys
 import random
+import requests
 
 import config
 from util.func import *  # pylint: disable=unused-wildcard-import
+from util import DbWrapper
+
+db = DbWrapper()
 
 #####################
 ### USER COMMANDS ###
@@ -66,6 +70,57 @@ async def yeet(message):
 
     await message.channel.send(msg)
 
+async def gitlab(message):
+    # validate args
+    try:
+        gitlab_username = message.content.split(" ")
+    except:
+        await send_error(message.channel, "GitLab error", "You need to specify a username")
+        return
+
+    # check if user already is registered for gitlab
+    if db.is_user_gitlab_registered(message.author.id):
+        await send_error(message.channel, "GitLab error", "User already registered for GitLab group")
+        return
+
+    # make sure user is ctf
+    if discord.utils.get(message.author.roles, id=config.VALID_ROLES["CTF"]) is None:
+        await send_error(message.channel, "GitLab error", "User doesn't have CTF role")
+        return
+
+    # do api stuff
+    headers = {
+        "Authorization": "Bearer " + config.GITLAB_TOKEN
+    }
+
+    # get username
+    # https://docs.gitlab.com/ee/api/users.html#for-normal-users
+    # parse out id
+    response = requests.get("https://gitlab.com/api/v4/users", data={"username": gitlab_username}, headers=headers)
+
+    try:
+        user_id = response.json()[0]["id"]
+    except:
+        await send_error(message.channel, "GitLab error", "Failed to find user with username `{}`".format(gitlab_username))
+        return
+
+    # add user to group
+    # https://docs.gitlab.com/ee/api/members.html#add-a-member-to-a-group-or-project
+    reponse = requests.post("https://gitlab.com/api/v4/groups/{}/members".format(config.GITLAB_GROUP_ID), data={"user_id": user_id, "access_level": 30}, headers=headers)
+
+    if response.status_code != 200:
+        await send_error(message.channel, "GitLab error", "Error adding user to group: `{}`".format(response.json()))
+        return
+
+    # save to db
+    try:
+        db.register_user_gitlab(message.author.id, gitlab_username)
+    except:
+        await send_error(message.channel, "DB error", "Error saving gitlab registration")
+        return
+
+    await send_success(message.channel, "GitLab success", "Successfully added `{}` to the GitLab group".format(gitlab_username))
+
 async def help(message):
     txt = """\
         Valid commands:
@@ -75,6 +130,7 @@ async def help(message):
         * `yeet`
         * `help`
         * `git`
+        * `gitlab`
 
         Admin commands:
         * `ctf`
