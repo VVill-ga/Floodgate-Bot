@@ -74,10 +74,10 @@ async def on_message(message):
             await channel.role(message)
         elif message.content.startswith("!help"):
             await channel.help(message)
-        elif message.content.startswith("!git"):
-            await channel.git(message)
         elif message.content.startswith("!gitlab"):
             await channel.gitlab(message)
+        elif message.content.startswith("!git"):
+            await channel.git(message)
         elif discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
             # admin commands
             if message.content.startswith("!upgrade"):
