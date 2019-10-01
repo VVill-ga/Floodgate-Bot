@@ -11,6 +11,7 @@ EMBED_ERROR = 0xe81010 # red
 VALID_ROLES = {"role1": 1234, "role2": 1234}
 
 DISCORD_CLIENT_TOKEN = 'tokentokentoken'
+GITLAB_TOKEN = 'tokentokentoken'
 
 EMAIL_SERVER = "something.com"
 EMAIL_USERNAME = "something@example.com"
