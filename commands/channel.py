@@ -73,7 +73,7 @@ async def yeet(message):
 async def gitlab(message):
     # validate args
     try:
-        gitlab_username = message.content.split(" ")
+        gitlab_username = message.content.split(" ")[1]
     except:
         await send_error(message.channel, "GitLab error", "You need to specify a username")
         return
