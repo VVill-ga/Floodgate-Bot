@@ -150,5 +150,10 @@ async def help(message):
         * `restart`
         * `stop`
         """
-    
+
     await send_embed(message.channel, "Help", textwrap.dedent(txt))
+
+async def cookie(message):
+    await send_embed(message.channel, "🍪 You sent " + message + " a cookie!")
+
+

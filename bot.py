@@ -55,7 +55,7 @@ async def on_message(message):
     if message.channel.type == discord.ChannelType.private:
         logger.info("got dm from {0.name}#{0.discriminator}: {1}".format(message.author, message.content))
         await dm.handle_dm(message)
-    
+
     else:
         # we aren't in a DM
 
@@ -68,6 +68,8 @@ async def on_message(message):
             await channel.ping(message)
         elif message.content.startswith("!yeet"):
             await channel.yeet(message)
+        elif message.content.startswith("!cookie"):
+            await channel.cookie(message)
         elif message.content.startswith("!roles"):
             await channel.roles(message)
         elif message.content.startswith("!role"):
