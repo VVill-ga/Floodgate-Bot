@@ -82,6 +82,8 @@ async def on_message(message):
             await channel.git(message)
         elif message.content.startswith("!cowsay"):
             await channel.cowsay(message)
+        elif message.content.startswith("!upcoming"):
+            await channel.upcoming(message)
         elif discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
             # admin commands
             if message.content.startswith("!upgrade"):

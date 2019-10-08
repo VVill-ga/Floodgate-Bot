@@ -3,6 +3,10 @@ import textwrap
 import sys
 import random
 import requests
+import dateutil.parser
+from datetime import datetime
+from pytz import timezone
+
 from cowpy import cow
 
 import config
@@ -70,6 +74,24 @@ async def yeet(message):
     msg = random.choice(choices)
 
     await message.channel.send(msg)
+
+async def upcoming(message):
+    limit = 5
+    headers = {'User-Agent': 'OSUSEC'}
+    response = requests.get("https://ctftime.org/api/v1/events/", params={"limit": limit}, headers=headers).json()
+    msg = ''
+    for i in response:
+        msg += '**Name:** ' + i['title'] + '\n'
+        start = dateutil.parser.parse(i['start']).astimezone(timezone('US/Pacific'))
+        end = dateutil.parser.parse(i['finish']).astimezone(timezone('US/Pacific'))
+
+        msg += '**Start:** ' + start.strftime('%X PST %B %d, %Y') + '\n'
+        msg += '**End:** ' + end.strftime('%X PST %B %d, %Y') + '\n'
+        msg += '**Online:** ' + ('No' if i['onsite'] else 'Yes') + '\n'
+        msg += '**URL:** ' + i['ctftime_url'] + '\n'
+        msg += '\n'
+
+    await send_success(message.channel, msg)
 
 async def gitlab(message):
     # validate args
@@ -143,6 +165,7 @@ async def help(message):
         * `git`
         * `gitlab`
         * `cowsay`
+        * `upcoming`
 
         Admin commands:
         * `ctf`
