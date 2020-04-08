@@ -192,4 +192,4 @@ async def help(message):
 
 async def cookie(message):
     if (message.content.split(" ")[1:] is not None):
-        await send_embed(message.channel, "🍪" + " ".join(message.content.split(" ")[1:]) + " has been sent a cookie!")
+        await send_embed(message.channel, "🍪 " + " ".join(message.content.split(" ")[1:]) + " has been sent a cookie!")
