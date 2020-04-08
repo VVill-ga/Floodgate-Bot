@@ -85,12 +85,9 @@ async def upcoming(message):
     except:
         count = 5
 
-    try:
-        assert(100 >= count > 0)
-    except:
-        await send_error(message.channel, "Invalid `upcoming` command", "Usage: `upcomiing [n]`\nValid options:\n* `upcoming` \n* `upcoming n` where 100 >= n > 0")
-        return
-
+    if count > 12:
+        count = 12
+    
     headers = {'User-Agent': 'OSUSEC'}
     response = requests.get("https://ctftime.org/api/v1/events/", params={"limit": count}, headers=headers).json()
     msg = ''
