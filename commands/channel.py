@@ -48,10 +48,13 @@ async def role(message):
         if role_name in config.VALID_ROLES:
             if action == "add":
                 await message.author.add_roles(discord.utils.get(config.guild.roles, id=config.VALID_ROLES[role_name]))
-                await send_success(message.channel, "Added role")
+                await send_success(message.channel, "Added role `" + role_name + "`")
             elif action == "remove":
                 await message.author.remove_roles(discord.utils.get(config.guild.roles, id=config.VALID_ROLES[role_name]))
-                await send_success(message.channel, "Removed role")
+                await send_success(message.channel, "Removed role `" + role_name + "`")
+
+	else:
+		await send_error(message.channel, "Invalid Role `" + role_name + "`")
 
 async def roles(message):
     await send_embed(message.channel, "Valid roles for OSU Security Club", "\n".join(list(config.VALID_ROLES.keys())))
