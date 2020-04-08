@@ -76,9 +76,20 @@ async def yeet(message):
     await message.channel.send(msg)
 
 async def upcoming(message):
-    limit = 5
+    try:
+        split = message.content.split(" ")
+        count = int(split[1])
+    except:
+        count = 5
+
+    try:
+        assert(100 >= count > 0)
+    except:
+        await send_error(message.channel, "Invalid `upcoming` command", "Usage: `upcomiing [n]`\nValid options:\n* `upcoming` \n* `upcoming n` where 100 >= n > 0")
+        return
+
     headers = {'User-Agent': 'OSUSEC'}
-    response = requests.get("https://ctftime.org/api/v1/events/", params={"limit": limit}, headers=headers).json()
+    response = requests.get("https://ctftime.org/api/v1/events/", params={"limit": count}, headers=headers).json()
     msg = ''
     for i in response:
         msg += '**Name:** ' + i['title'] + '\n'
