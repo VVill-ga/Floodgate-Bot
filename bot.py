@@ -72,35 +72,35 @@ async def on_message(message):
         logger.info("got command from {}: {}".format(username, message.content))
 
         # handle command
-        if message.content.startswith("!ping "):
+        if message.content.startswith("!ping"):
             await channel.ping(message)
-        elif message.content.startswith("!yeet "):
+        elif message.content.startswith("!yeet"):
             await channel.yeet(message)
-        elif message.content.startswith("!cookie "):
+        elif message.content.startswith("!cookie"):
             await channel.cookie(message)
-        elif message.content.startswith("!roles "):
+        elif message.content.startswith("!roles"):
             await channel.roles(message)
-        elif message.content.startswith("!role "):
+        elif message.content.startswith("!role"):
             await channel.role(message)
-        elif message.content.startswith("!help "):
+        elif message.content.startswith("!help"):
             await channel.help(message)
-        elif message.content.startswith("!gitlab "):
+        elif message.content.startswith("!gitlab"):
             await channel.gitlab(message)
-        elif message.content.startswith("!git "):
+        elif message.content.startswith("!git"):
             await channel.git(message)
-        elif message.content.startswith("!cowsay "):
+        elif message.content.startswith("!cowsay"):
             await channel.cowsay(message)
-        elif message.content.startswith("!upcoming "):
+        elif message.content.startswith("!upcoming"):
             await channel.upcoming(message)
         elif discord.utils.get(message.author.roles, id=config.ADMIN_ROLE_ID) is not None:
             # admin commands
-            if message.content.startswith("!upgrade "):
+            if message.content.startswith("!upgrade"):
                 await admin.upgrade(message)
-            elif message.content.startswith("!restart "):
+            elif message.content.startswith("!restart"):
                 await admin.restart(message)
-            elif message.content.startswith("!stop "):
+            elif message.content.startswith("!stop"):
                 await admin.stop(message)
-            elif message.content.startswith("!ctf "):
+            elif message.content.startswith("!ctf"):
                 await admin.ctf(message)
             else:
                 await send_error(message.channel, "Invalid command (!help)")
