@@ -44,6 +44,12 @@ async def role(message):
         # user is verified
         role_name = " ".join(split[2:])
 
+        # check role in config.VALID_ROLES, and set role_name to the real name of that role if it exists
+        for role in config.VALID_ROLES:
+            if role.upper() == role_name.upper():
+                role_name = role
+                break
+
         # make sure requested role is valid
         if role_name in config.VALID_ROLES:
             if action == "add":
