@@ -1,28 +1,24 @@
-SERVER_ID = 1234
-VERIFIED_ROLE_ID = 1234
-ADMIN_ROLE_ID = 1234
-BOT_CHANNEL_ID = 1234
+BOT_PREFIX = "!"
+BOT_TOKEN = "tokentokentoken"
 
-EMBED_DEFAULT = 0x46b7e0 # blue
-EMBED_SUCCESS = 0x10e82d # green
-EMBED_WARNING = 0xd6e810 # yellow
-EMBED_ERROR = 0xe81010 # red
+GUILD_ID = 1234
+CTF_CATEGORY_ID = 2345
+ARCHIVE_CATEGORY_ID = 3456
+BOT_CHANNEL_ID = 5678
+MALWARE_CHANNEL_ID = 6789
 
-VALID_ROLES = {"role1": 1234, "role2": 1234}
+ROLES = {"admin": 1234, "verified": 2345, "ctf": 3456}
+ALLOWED_ROLES = ["ctf"]
 
-DISCORD_CLIENT_TOKEN = 'tokentokentoken'
+EMBED_DEFAULT = 0x5C6BC0  # blue
+EMBED_SUCCESS = 0x66BB6A  # green
+EMBED_WARNING = 0xFFCA28  # yellow
+EMBED_ERROR = 0xEF5350  # red
 
-GITLAB_TOKEN = 'tokentokentoken'
+GITLAB_TOKEN = "tokentokentoken"
 GITLAB_GROUP_ID = "123456"
 
 EMAIL_SERVER = "something.com"
 EMAIL_USERNAME = "something@example.com"
 EMAIL_PASSWORD = "hunter2"
 VALID_EMAIL_DOMAINS = ["example.com"]
-
-# Below are set dynamically
-guild = None
-verified_role = None
-bot_channel = None
-main_path = None
-client = None

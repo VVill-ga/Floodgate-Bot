@@ -1,198 +1,151 @@
+import asyncio
+import dateutil.parser
 import discord
-import textwrap
-import sys
 import random
 import requests
-import dateutil.parser
-from datetime import datetime
+from cowpy import cow
+from discord.ext import commands
 from pytz import timezone
 
-from cowpy import cow
-
 import config
-from util.func import *  # pylint: disable=unused-wildcard-import
-from util import DbWrapper
+from util.checks import *
+from util.func import *
 
-db = DbWrapper()
 
-#####################
-### USER COMMANDS ###
-#####################
+class ChannelCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-async def ping(message):
-    await send_embed(message.channel, "Pong!")
+    @commands.command()
+    async def ping(self, ctx):
+        await ctx.send("Pong!")
 
-async def role(message):
-    try:
-        split = message.content.split(" ")
-        action = split[1]
-    except:
-        await send_error(message.channel, "Invalid `role` command", "Usage: `role [action] [name]`\nValid actions:\n* `add`\n* `remove`\n\nUse `!roles` to see available roles")
-        return
+    @commands.command()
+    async def git(self, ctx):
+        commit = get_stdout("git rev-parse HEAD")[:7]
+        url = get_stdout("git remote get-url origin")
 
-    # make sure we have a valid command
-    if action not in ["add", "remove"]:
-        await send_error(message.channel, "Invalid `role` command", "Valid commands are `add` and `remove`.")
-    else:
+        await ctx.send(
+            embed=embed_embed("Git Info", f"Running commit `{commit}`\nfrom `{url}`")
+        )
 
-        # make sure user is verified
-        if discord.utils.get(message.author.roles, id=config.VERIFIED_ROLE_ID) is None:
-            # user isn't verified
-            await send_error(message.channel, "User isn't verified", "Please verify before requesting roles")
-            return
+    @commands.command()
+    async def yeet(self, ctx):
+        choices = [
+            'lyell read says "yote"',
+            "https://tenor.com/view/yeet-rafiki-simba-lion-king-gif-12559094",
+            "https://tenor.com/view/big-yeet-spinning-gif-11694855",
+            "https://tenor.com/view/dab-dancing-idgaf-gif-5661979",
+            "https://tenor.com/view/yeet-fortnite-dance-lazerbeem-dance-gif-14816618",
+        ]
 
-        # user is verified
-        role_name = " ".join(split[2:])
+        await ctx.send(random.choice(choices))
 
-        # check role in config.VALID_ROLES, and set role_name to the real name of that role if it exists
-        for role in config.VALID_ROLES:
-            if role.upper() == role_name.upper():
-                role_name = role
-                break
+    def get_upcoming(self, count):
+        response = requests.get(
+            "https://ctftime.org/api/v1/events/",
+            params={"limit": count},
+            headers={"User-Agent": "OSUSEC Bot v2"},
+        ).json()
 
-        # make sure requested role is valid
-        if role_name in config.VALID_ROLES:
-            if action == "add":
-                await message.author.add_roles(discord.utils.get(config.guild.roles, id=config.VALID_ROLES[role_name]))
-                await send_success(message.channel, "Added role `" + role_name + "`")
-            elif action == "remove":
-                await message.author.remove_roles(discord.utils.get(config.guild.roles, id=config.VALID_ROLES[role_name]))
-                await send_success(message.channel, "Removed role `" + role_name + "`")
+        # remove non-online events
+        return list(filter(lambda i: not i["onsite"], response))
 
+    @commands.command()
+    async def upcoming(self, ctx, count: int = 5):
+        if count > 12:
+            count = 12
+
+        response = self.get_upcoming(count)
+        while len(response) < count:
+            response = self.get_upcoming(count + count - len(response))
+
+        embed = discord.Embed(title="Upcoming CTFs:", colour=config.EMBED_DEFAULT)
+        for idx, i in enumerate(response):
+            start = dateutil.parser.parse(i["start"]).astimezone(timezone("US/Pacific"))
+            end = dateutil.parser.parse(i["finish"]).astimezone(timezone("US/Pacific"))
+            msg = f"""**Start:** {start.strftime("%X PST %B %d, %Y")}
+            **End:** {end.strftime("%X PST %B %d, %Y")}
+            **CTFtime URL:** [{i["ctftime_url"].split('/')[-2]}]({i["ctftime_url"]})
+            \u200b
+            """
+
+            embed.add_field(name=i["title"], value=msg, inline=False)
+
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def cowsay(self, ctx, *, message=None):
+        if message is None or message == "-s":
+            return await ctx.send(embed=error_embed("Need something to `cowsay`!"))
+
+        stoned = message.startswith("-s ")
+        if stoned:
+            mycow = cow.Small(eyes="stoned", tongue=True)
+            message = message[3:]
         else:
-            await send_error(message.channel, "Invalid Role `" + role_name + "`")
+            mycow = cow.Small()
+        await ctx.send(f"```{mycow.milk(message)}```")
 
-async def roles(message):
-    await send_embed(message.channel, "Valid roles for OSU Security Club", "\n".join(list(config.VALID_ROLES.keys())))
+    @commands.command()
+    async def cookie(self, ctx, *, message=None):
+        if message is not None:
+            await ctx.send(embed=info_embed(f"🍪 {message} has been sent a cookie! 🍪"))
 
-async def git(message):
-    commit = get_stdout("git rev-parse HEAD")[:7]
-    url = get_stdout("git remote get-url origin")
+    @commands.command(name="ban")
+    async def fake_ban(self, ctx, member: discord.Member = None):
+        if member is None or has_role(member, config.ROLES["admin"]):
+            await ctx.send(embed=info_embed(None, "no u"))
+        else:
+            choices = [
+                "https://tenor.com/view/ban-button-keyboard-press-the-ban-button-gif-16387934",
+                "https://giphy.com/gifs/hammer-super-mario-8-bit-qPD4yGsrc0pdm",
+                "https://giphy.com/gifs/ban-banned-salt-bae-Vh2c84FAPVyvvjZJNM",
+            ]
 
-    await send_embed(message.channel, "Git Info", "Running commit {} from {}".format(commit, url))
+            await ctx.send(random.choice(choices))
 
-async def yeet(message):
-    choices = [
-        "lyell read says \"yote\"",
-        "https://tenor.com/view/yeet-rafiki-simba-lion-king-gif-12559094",
-        "https://tenor.com/view/big-yeet-spinning-gif-11694855",
-        "https://tenor.com/view/dab-dancing-idgaf-gif-5661979",
-        "https://tenor.com/view/yeet-fortnite-dance-lazerbeem-dance-gif-14816618"
-    ]
+    @commands.command()
+    @is_verified()
+    async def spicy(self, ctx):
+        message = await ctx.send(
+            embed=warning_embed(
+                "Are you sure?",
+                f"""{ctx.author.mention}, by agreeing to access this channel, you agree to only use the \
+                samples within in agreement with the OSUSEC Code of Ethics: https://www.osusec.org/code-of-ethics/
+                We are not responsible if you infect your own or someone else's computer.
+                """,
+            )
+        )
+        await message.add_reaction("❌")
+        await message.add_reaction("✅")
 
-    msg = random.choice(choices)
+        def check(reaction, user):
+            return user.id == ctx.author.id and str(reaction.emoji) in ["❌", "✅"]
 
-    await message.channel.send(msg)
+        try:
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", check=check, timeout=30.0
+            )
+        except asyncio.TimeoutError:
+            await message.edit(embed=warning_embed("~~Are you sure?~~", "Timed out."))
+            return await message.clear_reactions()
 
-async def upcoming(message):
-    try:
-        split = message.content.split(" ")
-        count = int(split[1])
-    except:
-        count = 5
+        if str(reaction.emoji) == "✅":
+            spicy_channel = ctx.bot.get_channel(config.MALWARE_CHANNEL_ID)
+            perms = spicy_channel.overwrites
+            perms[ctx.author] = discord.PermissionOverwrite(view_channel=True)
+            await spicy_channel.edit(overwrites=perms)
+            await message.edit(embed=success_embed("Confirmed.", "Don't be evil."))
+        else:
+            await message.edit(embed=error_embed("~~Are you sure?~~", "Cancelled."))
 
-    if count > 12:
-        count = 12
-    
-    headers = {'User-Agent': 'OSUSEC'}
-    response = requests.get("https://ctftime.org/api/v1/events/", params={"limit": count}, headers=headers).json()
-    msg = ''
-    for i in response:
-        msg += '**Name:** ' + i['title'] + '\n'
-        start = dateutil.parser.parse(i['start']).astimezone(timezone('US/Pacific'))
-        end = dateutil.parser.parse(i['finish']).astimezone(timezone('US/Pacific'))
+        await message.clear_reactions()
 
-        msg += '**Start:** ' + start.strftime('%X PST %B %d, %Y') + '\n'
-        msg += '**End:** ' + end.strftime('%X PST %B %d, %Y') + '\n'
-        msg += '**Online:** ' + ('No' if i['onsite'] else 'Yes') + '\n'
-        msg += '**URL:** ' + i['ctftime_url'] + '\n'
-        msg += '\n'
 
-    await send_success(message.channel, msg)
+def setup(bot):
+    bot.add_cog(ChannelCommands(bot))
 
-async def gitlab(message):
-    # validate args
-    try:
-        gitlab_username = message.content.split(" ")[1]
-    except:
-        await send_error(message.channel, "GitLab error", "You need to specify a username")
-        return
 
-    # check if user already is registered for gitlab
-    if db.is_user_gitlab_registered(message.author.id):
-        await send_error(message.channel, "GitLab error", "User already registered for GitLab group")
-        return
-
-    # make sure user is ctf
-    if discord.utils.get(message.author.roles, id=config.VALID_ROLES["CTF"]) is None:
-        await send_error(message.channel, "GitLab error", "User doesn't have CTF role")
-        return
-
-    # do api stuff
-    headers = {
-        "Authorization": "Bearer " + config.GITLAB_TOKEN
-    }
-
-    # get username
-    # https://docs.gitlab.com/ee/api/users.html#for-normal-users
-    # parse out id
-    response = requests.get("https://gitlab.com/api/v4/users", data={"username": gitlab_username}, headers=headers)
-
-    try:
-        user_id = response.json()[0]["id"]
-    except:
-        await send_error(message.channel, "GitLab error", "Failed to find user with username `{}`".format(gitlab_username))
-        return
-
-    # add user to group
-    # https://docs.gitlab.com/ee/api/members.html#add-a-member-to-a-group-or-project
-    reponse = requests.post("https://gitlab.com/api/v4/groups/{}/members".format(config.GITLAB_GROUP_ID), data={"user_id": user_id, "access_level": 30}, headers=headers)
-
-    if response.status_code != 200:
-        await send_error(message.channel, "GitLab error", "Error adding user to group: `{}`".format(response.json()))
-        return
-
-    # save to db
-    try:
-        db.register_user_gitlab(message.author.id, gitlab_username)
-    except:
-        await send_error(message.channel, "DB error", "Error saving gitlab registration")
-        return
-
-    await send_success(message.channel, "GitLab success", "Successfully added `{}` to the GitLab group".format(gitlab_username))
-
-async def cowsay(message):
-    try:
-        text = " ".join(message.content.split(" ")[1:])
-    except:
-        await send_error(message.channel, "Need something to cowsay")
-
-    mycow = cow.Small()
-
-    await message.channel.send("```{}```".format(mycow.milk(text)))
-
-async def help(message):
-    txt = """\
-        Valid commands:
-        * `roles`
-        * `role`
-        * `ping`
-        * `yeet`
-        * `help`
-        * `git`
-        * `gitlab`
-        * `cowsay`
-        * `upcoming`
-
-        Admin commands:
-        * `ctf`
-        * `upgrade`
-        * `restart`
-        * `stop`
-        """
-
-    await send_embed(message.channel, "Help", textwrap.dedent(txt))
-
-async def cookie(message):
-    if (message.content.split(" ")[1:] is not None):
-        await send_embed(message.channel, "🍪 " + " ".join(message.content.split(" ")[1:]) + " has been sent a cookie!")
+def teardown(bot):
+    bot.remove_cog("ChannelCommands")

@@ -7,25 +7,28 @@ import sys
 
 import config
 
-# https://github.com/lohs-software-club/CSClubBot-Python/blob/master/CSClubBot.py#L176
-async def send_embed(channel, title, desc=None, color=config.EMBED_DEFAULT):
-    if desc is None:
-        desc = title
-        title = None
-    e = discord.Embed(title=title, description=desc, colour=color)
-    await channel.send(embed=e)
 
-async def send_success(channel, title, desc=None):
-    await send_embed(channel, title, desc, color=config.EMBED_SUCCESS)
+def info_embed(title, desc=None, color=config.EMBED_DEFAULT):
+    return discord.Embed(title=title, description=desc, colour=color)
 
-async def send_warning(channel, title, desc=None):
-    await send_embed(channel, title, desc, color=config.EMBED_WARNING)
 
-async def send_error(channel, title, desc=None):
-    await send_embed(channel, title, desc, color=config.EMBED_ERROR)
+def success_embed(title, desc=None):
+    return info_embed(title, desc, color=config.EMBED_SUCCESS)
+
+
+def warning_embed(title, desc=None):
+    return info_embed(title, desc, color=config.EMBED_WARNING)
+
+
+def error_embed(title, desc=None):
+    return info_embed(title, desc, color=config.EMBED_ERROR)
+
 
 def generate_token(member):
-    return hashlib.md5((str(member.id) + str(random.randint(10000000, 9999999999))).encode()).hexdigest()
+    return hashlib.md5(
+        (str(member.id) + str(random.randint(10000000, 9999999999))).encode()
+    ).hexdigest()
+
 
 # https://github.com/zzzanderw/NFS-Status/blob/master/nfs_status.py#L85
 def get_stdout(cmd, timeout=5):
@@ -35,7 +38,8 @@ def get_stdout(cmd, timeout=5):
     except subprocess.TimeoutExpired:
         return ""
 
+
 # https://stackoverflow.com/a/48130152
-async def restart_bot(*args):
-    os.execl(sys.executable, sys.executable, config.main_path, *args)
-    await config.client.close()
+def restart_bot(*args):
+    path_to_main_file = os.path.abspath(__file__).replace("util/func.py", "bot.py")
+    os.execl(sys.executable, sys.executable, path_to_main_file, *args)

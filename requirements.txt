@@ -1,6 +1,7 @@
+asyncio
+cowpy
 discord.py
+python_dateutil
+pytz
 pyutil
 requests
-pytz
-cowpy
-python_dateutil
