@@ -1,35 +1,56 @@
-import discord
+import os
+from discord.ext import commands
 
-import config
-from util.func import *  # pylint: disable=unused-wildcard-import
+from util.checks import *
+from util.func import *
 
-async def restart(message):
-    await send_warning(message.channel, "Restarting bot")
-    await restart_bot("restart")
 
-async def upgrade(message):
-    await send_embed(message.channel, "Pulling latest version from origin/master (may take a little while)")
-    get_stdout("git pull", timeout=20)
+class AdminCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    await send_warning(message.channel, "Restarting bot")
-    await restart_bot("upgrade")
+    @commands.command()
+    @is_admin()
+    async def restart(self, ctx):
+        await ctx.send(embed=warning_embed("Restarting bot..."))
+        await restart_bot("restart")
 
-async def stop(message):
-    await send_error(message.channel, "Stopping bot")
-    await config.client.close()
-    sys.exit(0)
+    @commands.command(name="upgrade", aliases=["update"])
+    @is_admin()
+    async def upgrade(self, ctx):
+        await ctx.send(
+            embed=info_embed(
+                "Updating bot...", "Updating to `origin/master`, may take a bit"
+            )
+        )
+        print("Updating repo & restarting bot...")
+        get_stdout("git pull", timeout=20)
+        await ctx.send(embed=warning_embed("Restarting bot..."))
+        await restart_bot("update")
 
-async def ctf(message):
-    try:
-        name = message.content.split(" ")[1]
-    except:
-        await send_error(message.channel, "Error", "Usage: `!ctf [ctf name]`")
-        return
+    @commands.command(name="stop", aliases=["shutdown"])
+    @is_admin()
+    async def stop(self, ctx):
+        await ctx.send(embed=error_embed("Stopping bot..."))
+        await ctx.bot.close()  # stops bot.run()
 
-    ctf_category = discord.utils.get(config.guild.categories, name="CTF")
-    assert(ctf_category is not None)
-    channel = await config.guild.create_text_channel(name, category=ctf_category, position=2)
+    @commands.command()
+    @is_admin()
+    async def reload(self, ctx):
+        await ctx.send(embed=warning_embed("Reloading commands..."))
+        print("Reloading commands...")
 
-    # await channel.edit(sync_permissions=True, position=2)
+        for filename in os.listdir("./commands"):
+            if filename.endswith(".py"):
+                print(f"> {filename}")
+                ctx.bot.reload_extension(f"commands.{filename[:-3]}")
 
-    await send_success(message.channel, "Channel created", "New CTF channel created: #{}".format(channel.name))
+        await ctx.send(embed=success_embed("Commands reloaded."))
+
+
+def setup(bot):
+    bot.add_cog(AdminCommands(bot))
+
+
+def teardown(bot):
+    bot.remove_cog("AdminCommands")

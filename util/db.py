@@ -1,5 +1,5 @@
 import sqlite3
-import os
+
 
 class DbWrapper:
     class __DbWrapper:
@@ -23,6 +23,9 @@ class DbWrapper:
             );"""
 
             self.c.execute(stmt)
+
+        def __del__(self):
+            self.close()
 
         def close(self):
             self.conn.commit()
@@ -51,7 +54,7 @@ class DbWrapper:
             try:
                 email = self.c.execute(stmt, vars).fetchone()[0]
                 self.conn.commit()
-                return email 
+                return email
             except:
                 return ""
 
@@ -111,8 +114,10 @@ class DbWrapper:
     # Singleton definitions
     # https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
     instance = None
+
     def __init__(self):
         if not DbWrapper.instance:
             DbWrapper.instance = DbWrapper.__DbWrapper()
+
     def __getattr__(self, name):
         return getattr(self.instance, name)
