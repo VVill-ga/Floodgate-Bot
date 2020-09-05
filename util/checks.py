@@ -9,9 +9,7 @@ def has_role(member, role_id):
 
 
 def has_admin_role(member):
-    return has_role(member, config.ROLES["officer"]) or has_role(
-        member, config.ROLES["advisor"]
-    )
+    return any(has_role(member, role) for role in config.ROLES['admin'])
 
 
 def is_verified():
