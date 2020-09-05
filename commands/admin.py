@@ -1,3 +1,4 @@
+import logging
 import os
 from discord.ext import commands
 
@@ -23,7 +24,7 @@ class AdminCommands(commands.Cog):
                 "Updating bot...", "Updating to `origin/master`, may take a bit"
             )
         )
-        print("Updating repo & restarting bot...")
+        logger.info("Updating repo & restarting bot...")
         get_stdout("git pull", timeout=20)
         await ctx.send(embed=warning_embed("Restarting bot..."))
         await restart_bot("update")
@@ -38,11 +39,11 @@ class AdminCommands(commands.Cog):
     @is_admin()
     async def reload(self, ctx):
         await ctx.send(embed=warning_embed("Reloading commands..."))
-        print("Reloading commands...")
+        logger.info("Reloading commands...")
 
         for filename in os.listdir("./commands"):
             if filename.endswith(".py"):
-                print(f"> {filename}")
+                logger.info(f"> {filename}")
                 ctx.bot.reload_extension(f"commands.{filename[:-3]}")
 
         await ctx.send(embed=success_embed("Commands reloaded."))
