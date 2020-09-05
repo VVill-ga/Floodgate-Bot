@@ -16,7 +16,7 @@ class MemberCommands(commands.Cog):
 
     @commands.command(name="role", aliases=["getrole", "addrole"])
     @is_verified()
-    async def role(self, ctx, action, role):
+    async def role(self, ctx, action, *, role):
         if action not in ["add", "remove"]:
             return await ctx.send(
                 embed=error_embed(
@@ -60,7 +60,8 @@ class MemberCommands(commands.Cog):
 
         await ctx.send(
             embed=error_embed(
-                "Invalid command", "Usage:\n`!role add [role]`\n`!role remove [role]`",
+                "Invalid command",
+                "Usage:\n`!role add [role]`\n`!role remove [role]`",
             )
         )
 

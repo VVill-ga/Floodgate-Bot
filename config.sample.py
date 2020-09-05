@@ -7,7 +7,7 @@ ARCHIVE_CATEGORY_ID = 3456
 BOT_CHANNEL_ID = 5678
 MALWARE_CHANNEL_ID = 6789
 
-ROLES = {"admin": 1234, "verified": 2345, "ctf": 3456}
+ROLES = {"admin": [1234], "verified": 2345, "ctf": 3456}
 ALLOWED_ROLES = ["ctf"]
 
 EMBED_DEFAULT = 0x5C6BC0  # blue

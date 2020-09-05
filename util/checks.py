@@ -8,6 +8,10 @@ def has_role(member, role_id):
     return discord.utils.get(member.roles, id=role_id) is not None
 
 
+def has_admin_role(member):
+    return any(has_role(member, role) for role in config.ROLES['admin'])
+
+
 def is_verified():
     async def predicate(ctx):
         return has_role(ctx.author, config.ROLES["verified"])
@@ -17,7 +21,7 @@ def is_verified():
 
 def is_admin():
     async def predicate(ctx):
-        return has_role(ctx.author, config.ROLES["admin"])
+        return has_admin_role(ctx.author)
 
     return commands.check(predicate)
 
