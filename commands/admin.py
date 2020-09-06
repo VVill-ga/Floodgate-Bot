@@ -5,6 +5,7 @@ from discord.ext import commands
 from util.checks import *
 from util.func import *
 
+logger = logging.getLogger("discord")
 
 class AdminCommands(commands.Cog):
     def __init__(self, bot):
