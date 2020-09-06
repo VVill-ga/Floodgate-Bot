@@ -111,8 +111,9 @@ class ChannelCommands(commands.Cog):
         message = await ctx.send(
             embed=warning_embed(
                 "Are you sure?",
-                f"""{ctx.author.mention}, by agreeing to access this channel, you agree to only use the \
-                samples within in agreement with the OSUSEC Code of Ethics: https://www.osusec.org/code-of-ethics/
+                f"""{ctx.author.mention}, by agreeing to access this channel, you agree \
+                to only use the samples within in agreement with the [OSUSEC Code of Ethics](https://www.osusec.org/code-of-ethics/) \
+                and the [channel rules](https://docs.google.com/document/d/11rS6Fb5jSCxDWK6nkoBpvlEZNebMGWVOymWltXXcri0/edit?usp=sharing).
                 We are not responsible if you infect your own or someone else's computer.
                 """,
             )
@@ -132,10 +133,9 @@ class ChannelCommands(commands.Cog):
             return await message.clear_reactions()
 
         if str(reaction.emoji) == "✅":
-            spicy_channel = ctx.bot.get_channel(config.MALWARE_CHANNEL_ID)
-            perms = spicy_channel.overwrites
-            perms[ctx.author] = discord.PermissionOverwrite(view_channel=True)
-            await spicy_channel.edit(overwrites=perms)
+            await ctx.author.add_roles(
+                discord.utils.get(ctx.guild.roles, id=config.ROLES["spicy"])
+            )
             await message.edit(embed=success_embed("Confirmed.", "Don't be evil."))
         else:
             await message.edit(embed=error_embed("~~Are you sure?~~", "Cancelled."))
