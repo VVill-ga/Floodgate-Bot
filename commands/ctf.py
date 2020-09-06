@@ -67,8 +67,10 @@ class CtfCommands(commands.Cog):
             )
 
             # delete oldest channel to stay under 50 channel category limit
-            oldest_channel = min(archive_category.text_channels, key=lambda channel: channel.created_at)
-            await oldest_channel.delete(reason='oldest channel in archive')
+            oldest_channel = min(
+                archive_category.text_channels, key=lambda channel: channel.created_at
+            )
+            await oldest_channel.delete(reason="oldest channel in archive")
 
             await ctx.channel.edit(category=archive_category, sync_permissions=False)
             await message.edit(embed=success_embed("Archived."))
