@@ -40,7 +40,7 @@ class CtfCommands(commands.Cog):
     async def archive_ctf(self, ctx):
         # ignore non-ctf-category channels
         if ctx.channel.category_id != config.CTF_CATEGORY_ID:
-            return
+            return await ctx.send(embed=error_embed("Use me in a ctf channel!"))
 
         message = await ctx.send(
             embed=warning_embed(
@@ -65,6 +65,11 @@ class CtfCommands(commands.Cog):
             archive_category = discord.utils.get(
                 ctx.guild.categories, id=config.ARCHIVE_CATEGORY_ID
             )
+
+            # delete oldest channel to stay under 50 channel category limit
+            oldest_channel = min(archive_category.text_channels, key=lambda channel: channel.created_at)
+            await oldest_channel.delete(reason='oldest channel in archive')
+
             await ctx.channel.edit(category=archive_category, sync_permissions=False)
             await message.edit(embed=success_embed("Archived."))
             await ctx.channel.edit(sync_permissions=True)
