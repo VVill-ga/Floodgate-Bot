@@ -26,7 +26,7 @@ class ChannelCommands(commands.Cog):
         url = get_stdout("git remote get-url origin")
 
         await ctx.send(
-            embed=embed_embed("Git Info", f"Running commit `{commit}`\nfrom `{url}`")
+            embed=info_embed("Git Info", f"Running commit `{commit}`\nfrom `{url}`")
         )
 
     @commands.command()
