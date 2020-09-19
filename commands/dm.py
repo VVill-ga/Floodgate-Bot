@@ -37,7 +37,7 @@ class DMCommands(commands.Cog):
                         )
                     )
 
-                    guild = message.client.get_guild(config.GUILD_ID)
+                    guild = message.guild
                     member = guild.get_member(message.author.id)
                     await member.add_roles(
                         discord.utils.get(guild.roles, id=config.ROLES["verified"])
