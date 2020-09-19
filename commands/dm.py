@@ -31,7 +31,7 @@ class DMCommands(commands.Cog):
                 # check if email is the same, if yes, re-add member
                 if db.get_email(message.author.id) == message.content:
                     # email checks out
-                    await message.send(
+                    await message.channel.send(
                         embed=info_embed(
                             "This account is already verified, re-adding Member role",
                         )
@@ -44,7 +44,7 @@ class DMCommands(commands.Cog):
                     )
                 else:
                     # wrong email
-                    await message.send(
+                    await message.channel.send(
                         embed=error_embed(
                             "This account was verified with a different email address",
                             "Please provide the original email.",
@@ -57,7 +57,7 @@ class DMCommands(commands.Cog):
                     message.content, db.get_token(message.author.id)
                 )
 
-                await message.send(
+                await message.channel.send(
                     embed=info_embed(
                         f"Emailed a confirmation token to {message.content}",
                         "Please reply with that token to get verified!",
@@ -74,7 +74,7 @@ class DMCommands(commands.Cog):
                 discord.utils.get(guild.roles, id=config.ROLES["verified"])
             )
 
-            await message.send(
+            await message.channel.send(
                 embbed=success_embed(
                     "Verification successful",
                     f"""Thank you for verifying, `{db.get_email(message.author.id)}`.
@@ -85,7 +85,7 @@ class DMCommands(commands.Cog):
 
         # message wasn't a valid token
         else:
-            await message.send(
+            await message.channel.send(
                 embed=error_embed(
                     "Invalid email or token",
                     "Make sure to provide your OSU email address (`@oregonstate.edu`).",
