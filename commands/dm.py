@@ -44,7 +44,7 @@ class DMCommands(commands.Cog):
                     )
                 else:
                     # wrong email
-                    await ctx.send(
+                    await message.send(
                         embed=error_embed(
                             "This account was verified with a different email address",
                             "Please provide the original email.",
@@ -57,7 +57,7 @@ class DMCommands(commands.Cog):
                     message.content, db.get_token(message.author.id)
                 )
 
-                await ctx.send(
+                await message.send(
                     embed=info_embed(
                         f"Emailed a confirmation token to {message.content}",
                         "Please reply with that token to get verified!",
@@ -68,13 +68,13 @@ class DMCommands(commands.Cog):
         # maybe it's a token?
         elif db.verify_member(message.author.id, message.content) == 1:
             # this person had that message as their token, they are now verified
-            guild = message.client.get_guild(config.GUILD_ID)
+            guild = message.guild
             member = guild.get_member(message.author.id)
             await member.add_roles(
                 discord.utils.get(guild.roles, id=config.ROLES["verified"])
             )
 
-            await ctx.send(
+            await message.send(
                 embbed=success_embed(
                     "Verification successful",
                     f"""Thank you for verifying, `{db.get_email(message.author.id)}`.
@@ -85,7 +85,7 @@ class DMCommands(commands.Cog):
 
         # message wasn't a valid token
         else:
-            await ctx.send(
+            await message.send(
                 embed=error_embed(
                     "Invalid email or token",
                     "Make sure to provide your OSU email address (`@oregonstate.edu`).",
