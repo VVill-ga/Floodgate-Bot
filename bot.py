@@ -34,7 +34,7 @@ async def on_ready():
         await channel.send(
             embed=info_embed(
                 "Bot updated.",
-                f'Running commit `{get_stdout("git rev-parse HEAD")[:7]}`',
+                f'Running commit `{get_stdout("git rev-parse HEAD")[:8]}`',
             )
         )
 

@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord.utils import find
 
 import config
 from util import DbWrapper, email
@@ -37,7 +38,7 @@ class DMCommands(commands.Cog):
                         )
                     )
 
-                    guild = message.guild
+                    guild = find(lambda g: g.id == config.GUILD_ID, bot.guilds)
                     member = guild.get_member(message.author.id)
                     await member.add_roles(
                         discord.utils.get(guild.roles, id=config.ROLES["verified"])
@@ -68,7 +69,7 @@ class DMCommands(commands.Cog):
         # maybe it's a token?
         elif db.verify_member(message.author.id, message.content) == 1:
             # this person had that message as their token, they are now verified
-            guild = message.guild
+            guild = find(lambda g: g.id == config.GUILD_ID, bot.guilds)
             member = guild.get_member(message.author.id)
             await member.add_roles(
                 discord.utils.get(guild.roles, id=config.ROLES["verified"])
