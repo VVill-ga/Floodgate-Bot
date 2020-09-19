@@ -76,7 +76,7 @@ class DMCommands(commands.Cog):
             )
 
             await message.channel.send(
-                embbed=success_embed(
+                embed=success_embed(
                     "Verification successful",
                     f"""Thank you for verifying, `{db.get_email(message.author.id)}`.
                     I've updated your roles, and you should have access to all of the channels now.
