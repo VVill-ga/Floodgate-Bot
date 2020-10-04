@@ -122,9 +122,9 @@ class MemberCommands(commands.Cog):
             headers=headers,
         )
 
-        if response.status_code != 200:
+        if response.status_code >= 400:
             await ctx.send(
-                embed=error_embed(f"Error adding user to group:\n```{response.json}```")
+                embed=error_embed(f"Error adding user to group:\n```{response.json()}```")
             )
             return
 
