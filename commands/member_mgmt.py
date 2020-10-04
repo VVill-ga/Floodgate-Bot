@@ -100,7 +100,7 @@ class MemberCommands(commands.Cog):
         # parse out id
         response = requests.get(
             "https://gitlab.com/api/v4/users",
-            data={"username": gitlab_username},
+            data={"username": username},
             headers=headers,
         )
 
@@ -109,7 +109,7 @@ class MemberCommands(commands.Cog):
         except:
             await ctx.send(
                 embed=error_embed(
-                    f"Failed to find user with username `{gitlab_username}`"
+                    f"Failed to find user with username `{username}`"
                 )
             )
             return
@@ -130,14 +130,14 @@ class MemberCommands(commands.Cog):
 
         # save to db
         try:
-            db.register_user_gitlab(message.author.id, gitlab_username)
+            db.register_user_gitlab(ctx.author.id, username)
         except:
             await ctx.send(embed=error_embed("Error saving Gitlab registration to db"))
             return
 
         await ctx.send(
             embed=success_embed(
-                f"Successfully added `{gitlab_username}` to the GitLab group"
+                f"Successfully added `{username}` to the GitLab group"
             )
         )
 
