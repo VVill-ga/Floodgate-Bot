@@ -93,8 +93,8 @@ class ChannelCommands(commands.Cog):
             await ctx.send(embed=info_embed(f"🍪 {message} has been sent a cookie! 🍪"))
 
     @commands.command(name="ban")
-    async def fake_ban(self, ctx, member: discord.Member = None):
-        if member is None or has_admin_role(member):
+    async def fake_ban(self, ctx):
+        if len(ctx.message.mentions) > 0 and has_admin_role(ctx.message.mentions[0]):
             await ctx.send(embed=info_embed(None, "no u"))
         else:
             choices = [
