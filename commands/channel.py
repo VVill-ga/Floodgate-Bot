@@ -142,6 +142,42 @@ class ChannelCommands(commands.Cog):
 
         await message.clear_reactions()
 
+    @commands.command()
+    @is_verified()
+    async def politics(self, ctx):
+        message = await ctx.send(
+            embed=warning_embed(
+                "Are you sure?",
+                f"""{ctx.author.mention}, by agreeing to access this channel, you agree \
+                to participate in accordance with the [OSUSEC Code of Ethics](https://www.osusec.org/code-of-ethics/) \
+                and the [channel rules](https://docs.google.com/document/d/1r4DEWnMZAQ4HES5jJN58g3Vhm7Oeory4bmbWHr4RWXo/edit?usp=sharing).
+                """,
+            )
+        )
+        await message.add_reaction("❌")
+        await message.add_reaction("✅")
+
+        def check(reaction, user):
+            return user.id == ctx.author.id and str(reaction.emoji) in ["❌", "✅"]
+
+        try:
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", check=check, timeout=30.0
+            )
+        except asyncio.TimeoutError:
+            await message.edit(embed=warning_embed("~~Are you sure?~~", "Timed out."))
+            return await message.clear_reactions()
+
+        if str(reaction.emoji) == "✅":
+            await ctx.author.add_roles(
+                discord.utils.get(ctx.guild.roles, id=config.ROLES["politics"])
+            )
+            await message.edit(embed=success_embed("Confirmed.", "Please Be Civil."))
+        else:
+            await message.edit(embed=error_embed("~~Are you sure?~~", "Cancelled."))
+
+        await message.clear_reactions()
+
 
 def setup(bot):
     bot.add_cog(ChannelCommands(bot))
