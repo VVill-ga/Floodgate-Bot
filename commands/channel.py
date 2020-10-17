@@ -107,7 +107,7 @@ class ChannelCommands(commands.Cog):
 
     @commands.command()
     @is_verified()
-    async def spicy(self, ctx):
+    async def malware(self, ctx):
         message = await ctx.send(
             embed=warning_embed(
                 "Are you sure?",
@@ -134,7 +134,7 @@ class ChannelCommands(commands.Cog):
 
         if str(reaction.emoji) == "✅":
             await ctx.author.add_roles(
-                discord.utils.get(ctx.guild.roles, id=config.ROLES["spicy"])
+                discord.utils.get(ctx.guild.roles, id=config.ROLES["malware"])
             )
             await message.edit(embed=success_embed("Confirmed.", "Don't be evil."))
         else:
