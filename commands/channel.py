@@ -80,7 +80,7 @@ class ChannelCommands(commands.Cog):
             return await ctx.send(embed=error_embed("Need something to `cowsay`!"))
 
         if '`' in message:
-            return await ctx.send(embed=error_embed("Cowsay escape will not be that easy ;)")
+            return await ctx.send(embed=error_embed("Cowsay escape will not be that easy ;)"))
 
         stoned = message.startswith("-s ")
         if stoned:
