@@ -79,6 +79,9 @@ class ChannelCommands(commands.Cog):
         if message is None or message == "-s":
             return await ctx.send(embed=error_embed("Need something to `cowsay`!"))
 
+        if '`' in message:
+            return await ctx.send(embed=error_embed("Cowsay escape will not be that easy ;)")
+
         stoned = message.startswith("-s ")
         if stoned:
             mycow = cow.Small(eyes="stoned", tongue=True)
