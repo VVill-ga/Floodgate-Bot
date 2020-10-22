@@ -60,8 +60,7 @@ class MemberCommands(commands.Cog):
 
         await ctx.send(
             embed=error_embed(
-                "Invalid command",
-                "Usage:\n`!role add [role]`\n`!role remove [role]`",
+                "Invalid command", "Usage:\n`!role add [role]`\n`!role remove [role]`",
             )
         )
 
@@ -108,9 +107,7 @@ class MemberCommands(commands.Cog):
             user_id = response.json()[0]["id"]
         except:
             await ctx.send(
-                embed=error_embed(
-                    f"Failed to find user with username `{username}`"
-                )
+                embed=error_embed(f"Failed to find user with username `{username}`")
             )
             return
 
@@ -124,7 +121,9 @@ class MemberCommands(commands.Cog):
 
         if response.status_code >= 400:
             await ctx.send(
-                embed=error_embed(f"Error adding user to group:\n```{response.json()}```")
+                embed=error_embed(
+                    f"Error adding user to group:\n```{response.json()}```"
+                )
             )
             return
 
@@ -136,9 +135,7 @@ class MemberCommands(commands.Cog):
             return
 
         await ctx.send(
-            embed=success_embed(
-                f"Successfully added `{username}` to the GitLab group"
-            )
+            embed=success_embed(f"Successfully added `{username}` to the GitLab group")
         )
 
     @commands.Cog.listener()
@@ -157,6 +154,20 @@ class MemberCommands(commands.Cog):
             )
         )
         # goto dm.py
+
+    @commands.command()
+    async def alumni(self, ctx):
+        if db.is_user_verified(message.author.id):
+            # Member, remove member, add alumni, react
+            await member.add_roles(
+                discord.utils.get(ctx.guild.roles, id=config.ROLES["alumni"])
+            )
+            await ctx.author.remove_roles(
+                discord.utils.get(ctx.guild.roles, id=config.ROLES["verified"])
+            )
+            await ctx.message.add_reaction("✅")
+        else:
+            return await ctx.send(embed=error_embed("You are not a member."))
 
 
 def setup(bot):
