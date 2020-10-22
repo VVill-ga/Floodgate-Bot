@@ -79,8 +79,10 @@ class ChannelCommands(commands.Cog):
         if message is None or message == "-s":
             return await ctx.send(embed=error_embed("Need something to `cowsay`!"))
 
-        if '`' in message:
-            return await ctx.send(embed=error_embed("Cowsay escape will not be that easy ;)"))
+        if "`" in message:
+            return await ctx.send(
+                embed=error_embed("Cowsay escape will not be that easy ;)")
+            )
 
         stoned = message.startswith("-s ")
         if stoned:
@@ -180,6 +182,20 @@ class ChannelCommands(commands.Cog):
             await message.edit(embed=error_embed("~~Are you sure?~~", "Cancelled."))
 
         await message.clear_reactions()
+
+    @commands.command()
+    @is_verified()
+    async def leave(self, ctx, *, message=None):
+        if message == "politics":
+            if config.ROLES["politics"] in [x.id for x in ctx.author.roles]:
+                await ctx.author.remove_roles(
+                    discord.utils.get(ctx.guild.roles, id=config.ROLES["politics"])
+                )
+        elif message == "malware":
+            if config.ROLES["malware"] in [x.id for x in ctx.author.roles]:
+                await ctx.author.remove_roles(
+                    discord.utils.get(ctx.guild.roles, id=config.ROLES["malware"])
+                )
 
 
 def setup(bot):
