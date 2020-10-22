@@ -18,7 +18,14 @@ class ChannelCommands(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        await ctx.send("Pong!")
+        ping_ts = ctx.message.created_at
+        pong_msg = await ctx.send(embed=info_embed("Pong!"))
+        pong_ts = pong_msg.created_at
+        await pong_msg.edit(
+            embed=info_embed(
+                "Pong!", f"⌚ {round((pong_ts - ping_ts).total_seconds() * 1000, 1)}ms"
+            )
+        )
 
     @commands.command()
     async def git(self, ctx):

@@ -7,6 +7,7 @@ from util.func import *
 
 logger = logging.getLogger("discord")
 
+
 class AdminCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

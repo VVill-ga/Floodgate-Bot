@@ -60,7 +60,8 @@ class MemberCommands(commands.Cog):
 
         await ctx.send(
             embed=error_embed(
-                "Invalid command", "Usage:\n`!role add [role]`\n`!role remove [role]`",
+                "Invalid command",
+                "Usage:\n`!role add [role]`\n`!role remove [role]`",
             )
         )
 
