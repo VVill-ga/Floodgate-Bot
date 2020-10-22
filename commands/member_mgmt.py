@@ -159,7 +159,7 @@ class MemberCommands(commands.Cog):
     async def alumni(self, ctx):
         if db.is_user_verified(ctx.message.author.id):
             # Member, remove member, add alumni, react
-            await member.add_roles(
+            await ctx.author.add_roles(
                 discord.utils.get(ctx.guild.roles, id=config.ROLES["alumni"])
             )
             await ctx.author.remove_roles(
