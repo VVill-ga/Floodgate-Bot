@@ -191,11 +191,13 @@ class ChannelCommands(commands.Cog):
                 await ctx.author.remove_roles(
                     discord.utils.get(ctx.guild.roles, id=config.ROLES["politics"])
                 )
+                await ctx.message.add_reaction("✅")
         elif message == "malware":
             if config.ROLES["malware"] in [x.id for x in ctx.author.roles]:
                 await ctx.author.remove_roles(
                     discord.utils.get(ctx.guild.roles, id=config.ROLES["malware"])
                 )
+                await ctx.message.add_reaction("✅")
 
 
 def setup(bot):
