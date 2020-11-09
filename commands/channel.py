@@ -87,7 +87,9 @@ class ChannelCommands(commands.Cog):
         else:
             await ctx.message.add_reaction("✅")
             await asyncio.sleep(seconds)
-            await ctx.send(f"Hi, <@{ctx.author.id}>: {reminder} {counter}. Bye")
+            await ctx.send(
+                f"Hi, <@{ctx.author.id}>: {reminder} (you asked {counter} ago). Bye"
+            )
             return
         await ctx.send(embed=embed)
 
