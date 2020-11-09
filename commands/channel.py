@@ -3,6 +3,7 @@ import dateutil.parser
 import discord
 import random
 import requests
+from datetime import *
 from cowpy import cow
 from discord.ext import commands
 from pytz import timezone
@@ -35,6 +36,60 @@ class ChannelCommands(commands.Cog):
         await ctx.send(
             embed=info_embed("Git Info", f"Running commit `{commit}`\nfrom `{url}`")
         )
+
+    @commands.command(case_insensitive=True, aliases=["remind", "remind_me"])
+    async def remindme(self, ctx, time, reminder):
+        # Inspired by: https://stackoverflow.com/a/63659761/8704864
+
+        print(time)
+        print(reminder)
+
+        # Check that supplied reminder exists.
+        if reminder is None:
+            embed.add_field(
+                name="Warning",
+                value="Please specify what do you want me to remind you about.",
+            )
+
+        user = ctx.message.author
+        embed = discord.Embed(color=0x55A7F7, timestamp=datetime.utcnow())
+
+        seconds = 0
+
+        # Parse time into seconds
+        if time.lower().endswith("d"):
+            seconds += int(time[:-1]) * 60 * 60 * 24
+            counter = f"{seconds // 60 // 60 // 24} days"
+        if time.lower().endswith("h"):
+            seconds += int(time[:-1]) * 60 * 60
+            counter = f"{seconds // 60 // 60} hours"
+        elif time.lower().endswith("m"):
+            seconds += int(time[:-1]) * 60
+            counter = f"{seconds // 60} minutes"
+        elif time.lower().endswith("s"):
+            seconds += int(time[:-1])
+            counter = f"{seconds} seconds"
+        if seconds == 0:
+            embed.add_field(
+                name="Warning",
+                value="Please specify a proper duration, e.g. 10s, 40m, 10d...",
+            )
+        elif seconds < 30:
+            embed.add_field(
+                name="Warning",
+                value="You have specified a too short duration!\nMinimum duration is 5 minutes.",
+            )
+        elif seconds > 7776000:
+            embed.add_field(
+                name="Warning",
+                value="You have specified a too long duration!\nMaximum duration is 90 days.",
+            )
+        else:
+            await ctx.message.add_reaction("✅")
+            await asyncio.sleep(seconds)
+            await ctx.send(f"Hi, <@{ctx.author.id}>: {reminder} {counter}. Bye")
+            return
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def yeet(self, ctx):
