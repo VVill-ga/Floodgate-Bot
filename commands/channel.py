@@ -51,7 +51,7 @@ class ChannelCommands(commands.Cog):
                 value="Please specify what do you want me to remind you about.",
             )
 
-        for character in ["`", "@", "<", ">"]:
+        for character in ["@", "<", ">"]:
             if not reminder == None and character in reminder:
                 embed.add_field(
                     name="Warning", value="Invalid character in reminder message.",
