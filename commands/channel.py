@@ -51,6 +51,12 @@ class ChannelCommands(commands.Cog):
                 value="Please specify what do you want me to remind you about.",
             )
 
+        for character in ["`", "@", "<", ">"]:
+            if not reminder == None and character in reminder:
+                embed.add_field(
+                    name="Warning", value="Invalid character in reminder message.",
+                )
+
         user = ctx.message.author
         embed = discord.Embed(color=0x55A7F7, timestamp=datetime.utcnow())
 
@@ -77,7 +83,7 @@ class ChannelCommands(commands.Cog):
         elif seconds < 30:
             embed.add_field(
                 name="Warning",
-                value="You have specified a too short duration!\nMinimum duration is 5 minutes.",
+                value="You have specified a too short duration!\nMinimum duration is 30s",
             )
         elif seconds > 7776000:
             embed.add_field(
