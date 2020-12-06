@@ -27,6 +27,11 @@ class MemberCommands(commands.Cog):
 
         role = role.lower()
 
+        # if role is malware or politics, run those functions.
+        if role in ["malware", "politics"]:
+            command = self.bot.get_command(role)
+            return await command.__call__(ctx)
+
         # if not a valid role
         if role not in config.ALLOWED_ROLES:
             return await ctx.send(
