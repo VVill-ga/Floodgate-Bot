@@ -38,7 +38,7 @@ class ChannelCommands(commands.Cog):
         )
 
     @commands.command(case_insensitive=True, aliases=["remind", "remind_me"])
-    async def remindme(self, ctx, time, *, reminder):
+    async def remindme(self, ctx, time, *, reminder=None):
         # Inspired by: https://stackoverflow.com/a/63659761/8704864
 
         print(time)
@@ -54,7 +54,8 @@ class ChannelCommands(commands.Cog):
         for character in ["@", "<", ">"]:
             if not reminder == None and character in reminder:
                 embed.add_field(
-                    name="Warning", value="Invalid character in reminder message.",
+                    name="Warning",
+                    value="Invalid character in reminder message.",
                 )
 
         user = ctx.message.author
