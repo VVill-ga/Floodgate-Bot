@@ -38,7 +38,7 @@ class ChannelCommands(commands.Cog):
         )
 
     @commands.command(case_insensitive=True, aliases=["remind", "remind_me"])
-    async def remindme(self, ctx, time, *, reminder=None):
+    async def remindme(self, ctx, time, *, reminder="No Message"):
         # Inspired by: https://stackoverflow.com/a/63659761/8704864
 
         print(time)
