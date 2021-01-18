@@ -44,6 +44,9 @@ class ChannelCommands(commands.Cog):
         print(time)
         print(reminder)
 
+        user = ctx.message.author
+        embed = discord.Embed(color=0x55A7F7, timestamp=datetime.utcnow())
+
         # Check that supplied reminder exists.
         if reminder is None:
             embed.add_field(
@@ -57,9 +60,6 @@ class ChannelCommands(commands.Cog):
                     name="Warning",
                     value="Invalid character in reminder message.",
                 )
-
-        user = ctx.message.author
-        embed = discord.Embed(color=0x55A7F7, timestamp=datetime.utcnow())
 
         seconds = 0
 
