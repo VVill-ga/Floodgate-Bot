@@ -88,7 +88,7 @@ class CtfCommands(commands.Cog):
     
     @commands.command(name="decompile")
     @is_ctf()
-    async def create_ctf(self, ctx):
+    async def decompile(self, ctx):
         # make sure there is an attachment
         if len(ctx.message.attachments) == 0:
             await ctx.send(
