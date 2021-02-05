@@ -48,11 +48,14 @@ class ChannelCommands(commands.Cog):
         embed = discord.Embed(color=0x55A7F7, timestamp=datetime.utcnow())
 
         for character in ["@", "<", ">"]:
-            if not reminder == None and character in reminder:
+            if character in reminder:
+                print(f"Invalid character {character} in {reminder} caught.")
                 embed.add_field(
                     name="Warning",
                     value="Invalid character in reminder message.",
                 )
+                await ctx.send(embed=embed)
+                return
 
         seconds = 0
 
