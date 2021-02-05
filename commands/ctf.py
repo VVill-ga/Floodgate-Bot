@@ -149,7 +149,7 @@ class CtfCommands(commands.Cog):
                 break
             await message.edit(
                 embed=warning_embed(
-                    "Decompiling...", f"Binary is decompiling\n\nCurrent status: `{ret['analysis_status']}"
+                    "Decompiling...", f"Binary is decompiling\n\nCurrent status: `{ret['analysis_status']}`"
                 )
             )
             time.sleep(1)
@@ -161,7 +161,7 @@ class CtfCommands(commands.Cog):
             )
             return
 
-        r = requests.get(config.DAAS_URL + f"/get_decompilation/{id}", headers=headers)
+        r = requests.get(config.DAAS_URL + f"/get_decompilation/{bin_id}", headers=headers)
         ret = r.json()
 
         output_filename = f"{ctx.message.attachments[0].filename}_decomp.c"
