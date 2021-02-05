@@ -18,6 +18,9 @@ EMBED_ERROR = 0xEF5350  # red
 GITLAB_TOKEN = "tokentokentoken"
 GITLAB_GROUP_ID = "123456"
 
+DAAS_URL = "http://urlwithnoslash.com"
+DAAS_API_KEY = ""
+
 EMAIL_SERVER = "something.com"
 EMAIL_USERNAME = "something@example.com"
 EMAIL_PASSWORD = "hunter2"
