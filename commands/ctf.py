@@ -164,10 +164,15 @@ class CtfCommands(commands.Cog):
         r = requests.get(config.DAAS_URL + f"/get_decompilation/{id}", headers=headers)
         ret = r.json()
 
-        output_filename = f"{ctx.msg.attachments[0].filename}_decomp.c"
+        output_filename = f"{ctx.message.attachments[0].filename}_decomp.c"
         data = io.BytesIO(base64.b64decode(ret["output"].encode()))
 
         await ctx.channel.send(file=discord.File(data, output_filename))
+        await message.edit(
+            embed=success_embed(
+                "Decompilation completed", f"Decompilation was successful, see below for output"
+            )
+        )
 
 def setup(bot):
     bot.add_cog(CtfCommands(bot))
