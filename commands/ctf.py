@@ -133,19 +133,25 @@ class CtfCommands(commands.Cog):
 
         message = await ctx.send(
             embed=warning_embed(
-                "Decompiling...", f"Binary is decompiling\n\nCurrent status: `{r.json()['analysis_status']}"
+                "Decompiling...", f"Binary is queued for analysis"
             )
         )
 
         for _ in range(20):
             r = requests.get(config.DAAS_URL + f"/status/{bin_id}", headers=headers)
-            if r.json()["analysis_status"] == "completed":
+            ret = r.json()
+            if ret["analysis_status"] == "completed":
                 await message.edit(
                     embed=success_embed(
                         "Decompilation completed", f"Decompilation was successful, retrieving output"
                     )
                 )
                 break
+            await message.edit(
+                embed=warning_embed(
+                    "Decompiling...", f"Binary is decompiling\n\nCurrent status: `{ret['analysis_status']}"
+                )
+            )
             time.sleep(1)
         else:
             await message.edit(
