@@ -3,6 +3,7 @@ import dateutil.parser
 import discord
 import random
 import requests
+import aiohttp
 from datetime import *
 from cowpy import cow
 from discord.ext import commands
@@ -108,24 +109,35 @@ class ChannelCommands(commands.Cog):
 
         await ctx.send(random.choice(choices))
 
-    def get_upcoming(self, count):
-        response = requests.get(
-            "https://ctftime.org/api/v1/events/",
-            params={"limit": count},
-            headers={"User-Agent": "OSUSEC Bot v2"},
-        ).json()
+    async def get_upcoming(self, count):
+        # super fancy formula to determine the optimal number of events to request in order to get 
+        # enough for the specified count (to improve performance (VERY IMPORTANT, DO NOT CHANGE!!!))
+        limit = 18
+        from_date = -1
 
-        # remove non-online events
-        return list(filter(lambda i: not i["onsite"], response))
+        async with aiohttp.ClientSession() as session:
+            events = []
+            while len(events) < count:
+                async with session.get(
+                    "https://ctftime.org/api/v1/events/",
+                    params={"limit": limit} if from_date == -1 else {"limit": limit, "start": from_date},
+                    headers={"User-Agent": "OSUSEC Bot v2"},
+                ) as response:
+                    # remove non-online events
+                    to_add = list(filter(lambda i: not i["onsite"], await response.json()))
+                    if len(to_add) == 0:
+                        return events
+                    events += to_add if from_date == -1 else to_add[1:]
+                    from_date = int(dateutil.parser.parse(events[-1]["start"]).timestamp())
+            
+            return events[:count]
 
     @commands.command()
     async def upcoming(self, ctx, count: int = 5):
         if count > 12:
             count = 12
 
-        response = self.get_upcoming(count)
-        while len(response) < count:
-            response = self.get_upcoming(count + count - len(response))
+        response = await self.get_upcoming(count)
 
         embed = discord.Embed(title="Upcoming CTFs:", colour=config.EMBED_DEFAULT)
         for idx, i in enumerate(response):
