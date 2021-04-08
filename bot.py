@@ -17,8 +17,7 @@ logger.addHandler(handler)
 
 logger.info("Starting up...")
 
-
-bot = commands.Bot(command_prefix=config.BOT_PREFIX)
+bot = commands.Bot(command_prefix=config.BOT_PREFIX, intents=discord.Intents.all())
 
 
 @bot.event
@@ -26,6 +25,7 @@ async def on_ready():
     game = discord.Game("CTF")
     await bot.change_presence(status=discord.Status.online, activity=game)
     logger.info("Ready.")
+    print("Ready.")
 
     channel = bot.get_channel(config.BOT_CHANNEL_ID)
     if "restart" in sys.argv:

@@ -2,7 +2,6 @@ import asyncio
 import dateutil.parser
 import discord
 import random
-import requests
 import aiohttp
 from datetime import *
 from cowpy import cow
@@ -45,11 +44,10 @@ class ChannelCommands(commands.Cog):
         print(time)
         print(reminder)
 
-        user = ctx.message.author
         embed = discord.Embed(color=0x55A7F7, timestamp=datetime.utcnow())
 
         for character in ["@", "<", ">"]:
-            if character in reminder:
+            if reminder is not None and character in reminder:
                 print(f"Invalid character {character} in {reminder} caught.")
                 embed.add_field(
                     name="Warning",
@@ -110,7 +108,7 @@ class ChannelCommands(commands.Cog):
         await ctx.send(random.choice(choices))
 
     async def get_upcoming(self, count):
-        # super fancy formula to determine the optimal number of events to request in order to get 
+        # super fancy formula to determine the optimal number of events to request in order to get
         # enough for the specified count (to improve performance (VERY IMPORTANT, DO NOT CHANGE!!!))
         limit = 18
         from_date = -1
@@ -120,16 +118,22 @@ class ChannelCommands(commands.Cog):
             while len(events) < count:
                 async with session.get(
                     "https://ctftime.org/api/v1/events/",
-                    params={"limit": limit} if from_date == -1 else {"limit": limit, "start": from_date},
+                    params={"limit": limit}
+                    if from_date == -1
+                    else {"limit": limit, "start": from_date},
                     headers={"User-Agent": "OSUSEC Bot v2"},
                 ) as response:
                     # remove non-online events
-                    to_add = list(filter(lambda i: not i["onsite"], await response.json()))
+                    to_add = list(
+                        filter(lambda i: not i["onsite"], await response.json())
+                    )
                     if len(to_add) == 0:
                         return events
                     events += to_add if from_date == -1 else to_add[1:]
-                    from_date = int(dateutil.parser.parse(events[-1]["start"]).timestamp())
-            
+                    from_date = int(
+                        dateutil.parser.parse(events[-1]["start"]).timestamp()
+                    )
+
             return events[:count]
 
     @commands.command()
@@ -140,6 +144,7 @@ class ChannelCommands(commands.Cog):
         response = await self.get_upcoming(count)
 
         embed = discord.Embed(title="Upcoming CTFs:", colour=config.EMBED_DEFAULT)
+
         for idx, i in enumerate(response):
             start = dateutil.parser.parse(i["start"]).astimezone(timezone("US/Pacific"))
             end = dateutil.parser.parse(i["finish"]).astimezone(timezone("US/Pacific"))
@@ -199,7 +204,7 @@ class ChannelCommands(commands.Cog):
                 to only use the samples within in agreement with the [OSUSEC Code of Ethics](https://www.osusec.org/code-of-ethics/) \
                 and the [channel rules](https://docs.google.com/document/d/11rS6Fb5jSCxDWK6nkoBpvlEZNebMGWVOymWltXXcri0/edit?usp=sharing).
                 We are not responsible if you infect your own or someone else's computer.
-                """,
+                """,  # noqa: E501
             )
         )
         await message.add_reaction("❌")
@@ -235,7 +240,7 @@ class ChannelCommands(commands.Cog):
                 f"""{ctx.author.mention}, by agreeing to access this channel, you agree \
                 to participate in accordance with the [OSUSEC Code of Ethics](https://www.osusec.org/code-of-ethics/) \
                 and the [channel rules](https://docs.google.com/document/d/1r4DEWnMZAQ4HES5jJN58g3Vhm7Oeory4bmbWHr4RWXo/edit?usp=sharing).
-                """,
+                """,  # noqa: E501
             )
         )
         await message.add_reaction("❌")

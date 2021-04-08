@@ -1,4 +1,5 @@
 asyncio
+boto3
 cowpy
 discord.py
 python_dateutil

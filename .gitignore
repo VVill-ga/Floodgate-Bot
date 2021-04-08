@@ -1,8 +1,10 @@
 config.py
+config_aws.py
 discord.log
 **/__pycache__
 bot.db
 .vscode
-.flake8
 commands-old/
 *.swp
+Pipfile
+Pipfile.lock
