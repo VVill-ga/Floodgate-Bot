@@ -1,5 +1,4 @@
 import discord
-import requests
 import aiohttp
 from discord.ext import commands
 
@@ -114,7 +113,9 @@ class MemberCommands(commands.Cog):
                     user_id = (await response.json())[0]["id"]
                 except:
                     await ctx.send(
-                        embed=error_embed(f"Failed to find user with username `{username}`")
+                        embed=error_embed(
+                            f"Failed to find user with username `{username}`"
+                        )
                     )
                     return
 

@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import hashlib
 import os
@@ -8,19 +9,22 @@ import sys
 import config
 
 
-def info_embed(title, desc=None, color=config.EMBED_DEFAULT):
-    return discord.Embed(title=title, description=desc, colour=color)
+def info_embed(title, desc=False, color=config.EMBED_DEFAULT):
+    d = {"type": "rich", "title": title, "color": color}
+    if desc:
+        d["description"] = desc
+    return discord.Embed.from_dict(d)
 
 
-def success_embed(title, desc=None):
+def success_embed(title, desc=False):
     return info_embed(title, desc, color=config.EMBED_SUCCESS)
 
 
-def warning_embed(title, desc=None):
+def warning_embed(title, desc=False):
     return info_embed(title, desc, color=config.EMBED_WARNING)
 
 
-def error_embed(title, desc=None):
+def error_embed(title, desc=False):
     return info_embed(title, desc, color=config.EMBED_ERROR)
 
 
@@ -43,3 +47,11 @@ def get_stdout(cmd, timeout=5):
 def restart_bot(*args):
     path_to_main_file = os.path.abspath(__file__).replace("util/func.py", "bot.py")
     os.execl(sys.executable, sys.executable, path_to_main_file, *args)
+
+
+async def aws_wait_until(instance, state):
+    # poll instance instead of blocking `instance.wait_until_terminated()`
+    # to allow websocket to continue
+    while instance.state["Name"] != state:
+        await asyncio.sleep(1)
+        instance.reload()

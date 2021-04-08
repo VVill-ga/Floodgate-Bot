@@ -1,12 +1,9 @@
 import base64
 import io
-import time
 
 import asyncio
-from logging import warning
 import discord
 from discord.ext import commands
-import requests
 import aiohttp
 
 import config
@@ -86,7 +83,7 @@ class CtfCommands(commands.Cog):
             await message.edit(embed=error_embed("~~Are you sure?~~", "Cancelled."))
 
         await message.clear_reactions()
-    
+
     @commands.command(name="decompile")
     @is_ctf()
     async def decompile(self, ctx):
@@ -94,7 +91,8 @@ class CtfCommands(commands.Cog):
         if len(ctx.message.attachments) == 0:
             await ctx.send(
                 embed=error_embed(
-                    "No binary", "You need to upload a binary and put `!decompile` in the message"
+                    "No binary",
+                    "You need to upload a binary and put `!decompile` in the message",
                 )
             )
             return
@@ -105,77 +103,90 @@ class CtfCommands(commands.Cog):
                 if r.status != 200:
                     await ctx.send(
                         embed=error_embed(
-                            "Error", f"Failed to download binary, was it deleted? (status code: {r.status})"
+                            "Error",
+                            f"Failed to download binary, was it deleted? (status code: {r.status})",
                         )
                     )
                     return
-                
+
                 bin_contents = base64.b64encode(await r.content.read()).decode()
 
-                headers = {
-                    "Authorization": "Bearer " + config.DAAS_API_KEY
-                }
+                headers = {"Authorization": "Bearer " + config.DAAS_API_KEY}
 
                 # request decomp
                 body = {
                     "requestor": f"{ctx.message.author.name}#{ctx.message.author.discriminator} ({ctx.message.author.id})",
-                    "binary": bin_contents
+                    "binary": bin_contents,
                 }
-                async with session.post(config.DAAS_URL + "/request_decomp", headers=headers, json=body) as r:
+                async with session.post(
+                    config.DAAS_URL + "/request_decomp", headers=headers, json=body
+                ) as r:
                     resp = await r.json()
                     bin_id = resp["id"]
 
                     if r.status != 200 or resp["status"] != "ok":
                         await ctx.send(
                             embed=error_embed(
-                                "Couldn't decompile", f"Error from server (status code: {r.status}, status: {resp['status']})"
+                                "Couldn't decompile",
+                                f"Error from server (status code: {r.status}, status: {resp['status']})",
                             )
                         )
                         return
 
                     message = await ctx.send(
                         embed=warning_embed(
-                            "Decompiling...", f"Binary is queued for analysis"
+                            "Decompiling...", "Binary is queued for analysis"
                         )
                     )
 
                     for _ in range(20):
                         # this stuff might break, I'm not entirely sure how all this async stuff works
-                        async with session.get(config.DAAS_URL + f"/status/{bin_id}", headers=headers) as r:
+                        async with session.get(
+                            config.DAAS_URL + f"/status/{bin_id}", headers=headers
+                        ) as r:
                             ret = await r.json()
                             if ret["analysis_status"] == "completed":
                                 await message.edit(
                                     embed=success_embed(
-                                        "Decompilation completed", f"Decompilation was successful, retrieving output"
+                                        "Decompilation completed",
+                                        "Decompilation was successful, retrieving output",
                                     )
                                 )
                                 break
                             await message.edit(
                                 embed=warning_embed(
-                                    "Decompiling...", f"Binary is decompiling\n\nCurrent status: `{ret['analysis_status']}`"
+                                    "Decompiling...",
+                                    f"Binary is decompiling\n\nCurrent status: `{ret['analysis_status']}`",
                                 )
                             )
                         await asyncio.sleep(1)
                     else:
                         await message.edit(
                             embed=error_embed(
-                                "Couldn't decompile", f"Decompilation timed out"
+                                "Couldn't decompile", "Decompilation timed out"
                             )
                         )
                         return
 
-                    async with session.get(config.DAAS_URL + f"/get_decompilation/{bin_id}", headers=headers) as r:
+                    async with session.get(
+                        config.DAAS_URL + f"/get_decompilation/{bin_id}",
+                        headers=headers,
+                    ) as r:
                         ret = await r.json()
 
-                        output_filename = f"{ctx.message.attachments[0].filename}_decomp.c"
+                        output_filename = (
+                            f"{ctx.message.attachments[0].filename}_decomp.c"
+                        )
                         data = io.BytesIO(base64.b64decode(ret["output"].encode()))
 
                         await ctx.channel.send(file=discord.File(data, output_filename))
                         await message.edit(
                             embed=success_embed(
-                                "Decompilation completed", f"Decompilation was successful, see below for output"
+                                "Decompilation completed",
+                                "Decompilation was successful, see below for output",
                             )
                         )
+
 
 def setup(bot):
     bot.add_cog(CtfCommands(bot))

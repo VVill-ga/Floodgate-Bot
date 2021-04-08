@@ -31,3 +31,10 @@ def is_ctf():
         return has_role(ctx.author, config.ROLES["ctf"])
 
     return commands.check(predicate)
+
+
+def is_aws():
+    async def predicate(ctx):
+        return has_role(ctx.author, config.ROLES["aws"])
+
+    return commands.check(predicate)

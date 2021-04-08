@@ -23,7 +23,7 @@ Welcome to the OSU Security Club! In order to verify your membership, please sen
 {token}
 
 Message an Officer if you have any questions. Thanks, and welcome!
-    """
+    """  # noqa: E501
 
     msg = EmailMessage()
     msg["From"] = EMAIL_USERNAME
