@@ -1,5 +1,6 @@
 import discord
 import requests
+import aiohttp
 from discord.ext import commands
 
 import config
@@ -103,35 +104,34 @@ class MemberCommands(commands.Cog):
         # get username
         # https://docs.gitlab.com/ee/api/users.html#for-normal-users
         # parse out id
-        response = requests.get(
-            "https://gitlab.com/api/v4/users",
-            data={"username": username},
-            headers=headers,
-        )
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://gitlab.com/api/v4/users",
+                data={"username": username},
+                headers=headers,
+            ) as response:
+                try:
+                    user_id = (await response.json())[0]["id"]
+                except:
+                    await ctx.send(
+                        embed=error_embed(f"Failed to find user with username `{username}`")
+                    )
+                    return
 
-        try:
-            user_id = response.json()[0]["id"]
-        except:
-            await ctx.send(
-                embed=error_embed(f"Failed to find user with username `{username}`")
-            )
-            return
-
-        # add user to group
-        # https://docs.gitlab.com/ee/api/members.html#add-a-member-to-a-group-or-project
-        response = requests.post(
-            f"https://gitlab.com/api/v4/groups/{config.GITLAB_GROUP_ID}/members",
-            data={"user_id": user_id, "access_level": 30},
-            headers=headers,
-        )
-
-        if response.status_code >= 400:
-            await ctx.send(
-                embed=error_embed(
-                    f"Error adding user to group:\n```{response.json()}```"
-                )
-            )
-            return
+            # add user to group
+            # https://docs.gitlab.com/ee/api/members.html#add-a-member-to-a-group-or-project
+            async with session.post(
+                f"https://gitlab.com/api/v4/groups/{config.GITLAB_GROUP_ID}/members",
+                data={"user_id": user_id, "access_level": 30},
+                headers=headers,
+            ) as response:
+                if response.status >= 400:
+                    await ctx.send(
+                        embed=error_embed(
+                            f"Error adding user to group:\n```{await response.json()}```"
+                        )
+                    )
+                    return
 
         # save to db
         try:

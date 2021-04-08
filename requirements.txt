@@ -5,3 +5,4 @@ python_dateutil
 pytz
 pyutil
 requests
+aiohttp
