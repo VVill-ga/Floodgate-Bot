@@ -228,7 +228,7 @@ class AwsCommands(commands.Cog):
 
             instance = ec2.create_instances(
                 InstanceType=instance_type,
-                ImageId="ami-031b673f443c2172c",  # ubuntu 20.04
+                ImageId=config_aws.AWS_AMI_ID,
                 KeyName=f"botkey-{ctx.author.id}",
                 MinCount=1,
                 MaxCount=1,
