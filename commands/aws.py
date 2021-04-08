@@ -224,7 +224,7 @@ class AwsCommands(commands.Cog):
 
         with open("aws-cloud-config.yml", "r") as cloud_config_file:
             cloud_config = cloud_config_file.read()
-            cloud_config.replace("ssh-rsa ADMINKEY admin", config_aws.AWS_ADMIN_PUBKEY)
+            cloud_config = cloud_config.replace("ssh-rsa ADMINKEY admin", config_aws.AWS_ADMIN_PUBKEY)
 
             instance = ec2.create_instances(
                 InstanceType=instance_type,
