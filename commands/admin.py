@@ -42,10 +42,12 @@ class AdminCommands(commands.Cog):
     async def reload(self, ctx):
         await ctx.send(embed=warning_embed("Reloading commands..."))
         logger.info("Reloading commands...")
+        print("Reloading commands...")
 
         for filename in os.listdir("./commands"):
             if filename.endswith(".py"):
                 logger.info(f"> {filename}")
+                print(f"> {filename}")
                 ctx.bot.reload_extension(f"commands.{filename[:-3]}")
 
         await ctx.send(embed=success_embed("Commands reloaded."))

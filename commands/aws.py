@@ -223,12 +223,25 @@ class AwsCommands(commands.Cog):
         await ctx.message.add_reaction("⌛")
 
         with open("aws-cloud-config.yml", "r") as cloud_config_file:
-            cloud_config = cloud_config_file.read()
-            cloud_config = cloud_config.replace("ssh-rsa ADMINKEY admin", config_aws.AWS_ADMIN_PUBKEY)
+            cloud_config = cloud_config_file.read().replace(
+                "ssh-rsa ADMINKEY admin", config_aws.AWS_ADMIN_PUBKEY
+            )
+
+            ami_image = list(ec2.images.filter(ImageIds=[config_aws.AWS_AMI_ID]))[0]
 
             instance = ec2.create_instances(
                 InstanceType=instance_type,
                 ImageId=config_aws.AWS_AMI_ID,
+                BlockDeviceMappings=[
+                    {
+                        # overwrite root disk from ami image
+                        "DeviceName": ami_image.root_device_name,
+                        "Ebs": {
+                            "DeleteOnTermination": True,
+                            "VolumeSize": config_aws.AWS_DISK_SIZE,
+                        },
+                    }
+                ],
                 KeyName=f"botkey-{ctx.author.id}",
                 MinCount=1,
                 MaxCount=1,
