@@ -15,6 +15,9 @@ AWS_NET_SECURITY_GROUP = "sg-REPLACEME"
 # id of the AMI to use (e.g., ubuntu 20.04)
 AWS_AMI_ID = "ami-REPLACEME"
 
+# Size of the root disk, in GB
+AWS_DISK_SIZE = 20
+
 # admin access ssh pubkey -- added to every instance
 AWS_ADMIN_PUBKEY = "ssh-rsa ADMINKEY admin"
 
