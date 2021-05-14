@@ -187,6 +187,28 @@ class CtfCommands(commands.Cog):
                             )
                         )
 
+    @commands.command(name="pin")
+    @is_ctf()
+    async def pin_message(self, ctx):
+
+        if ctx.channel.category_id != config.CTF_CATEGORY_ID:
+            return await ctx.send(
+                embed=error_embed(
+                    "Use me in a ctf channel!"
+                )
+            )
+
+        if ctx.message.reference == None:
+            return await ctx.send(
+                embed=error_embed(
+                    "Reply to a message to pin it!"
+                )
+            )
+
+        to_pin = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+        await to_pin.pin()
+        await ctx.message.add_reaction("✅")
+
 
 def setup(bot):
     bot.add_cog(CtfCommands(bot))
