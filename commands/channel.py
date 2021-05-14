@@ -107,6 +107,18 @@ class ChannelCommands(commands.Cog):
 
         await ctx.send(random.choice(choices))
 
+    @commands.command()
+    async def hack(self, ctx):
+        epic_hacking = [
+            "https://tenor.com/view/pc-hack-hacker-guy-fawkes-mask-gif-17047235",
+            "https://tenor.com/view/typing-fast-cyber-banana-help-gif-16125910",
+            "https://tenor.com/view/mega64-hacking-in-progress-hacker-hacked-hd-gif-16542434",
+            "https://tenor.com/view/hacker-game-over-laptop-hacking-hack-gif-17366041",
+            "https://cdn.discordapp.com/attachments/670767796925235252/842257131142250516/breenhacking.webm"
+        ]
+
+        await ctx.send(random.choice(epic_hacking))
+
     async def get_upcoming(self, count):
         # super fancy formula to determine the optimal number of events to request in order to get
         # enough for the specified count (to improve performance (VERY IMPORTANT, DO NOT CHANGE!!!))
