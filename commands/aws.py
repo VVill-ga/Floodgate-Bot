@@ -11,7 +11,7 @@ from util.func import *
 
 logger = logging.getLogger("discord")
 
-ec2 = boto3.resource("ec2")
+ec2 = boto3.resource("ec2", region_name='us-west-2')
 
 
 class AwsCommands(commands.Cog):
