@@ -79,6 +79,7 @@ class MemberCommands(commands.Cog):
             )
         )
 
+    @is_verified()
     @commands.command()
     async def gitlab(self, ctx, username=None):
         if username is None:
@@ -90,11 +91,6 @@ class MemberCommands(commands.Cog):
             await ctx.send(
                 embed=error_embed("User already registered for GitLab group")
             )
-            return
-
-        # make sure user is ctf
-        if discord.utils.get(ctx.author.roles, id=config.ROLES["ctf"]) is None:
-            await ctx.send(embed=error_embed("User doesn't have CTF role"))
             return
 
         # do api stuff
