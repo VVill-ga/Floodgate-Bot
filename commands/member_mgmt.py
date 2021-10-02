@@ -141,6 +141,24 @@ class MemberCommands(commands.Cog):
             embed=success_embed(f"Successfully added `{username}` to the GitLab group")
         )
 
+    @gitlab.error
+    async def gitlab_err(self, ctx, error):
+        # if user is not verified
+        if isinstance(error, commands.CheckFailure):
+            return await ctx.send(
+                embed=error_embed(
+                    "User not verified",
+                    "Please verify yourself before requesting to join gitlab!",
+                )
+            )
+
+        await ctx.send(
+            embed=error_embed(
+                "Invalid command",
+                "Usage:\n`!gitlab <username>`",
+            )
+        )
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         # get confirmation token
