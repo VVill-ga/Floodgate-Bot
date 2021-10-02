@@ -23,7 +23,7 @@ class AdminCommands(commands.Cog):
     async def upgrade(self, ctx):
         await ctx.send(
             embed=info_embed(
-                f'Updating bot on branch `{get_stdout("git symbolic-ref -q HEAD")}`...',
+                f'Updating bot on branch `{get_stdout("git symbolic-ref -q HEAD").rstrip()}`...',
                 "This may take a bit",
             )
         )
