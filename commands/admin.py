@@ -21,7 +21,7 @@ class AdminCommands(commands.Cog):
     @commands.command(name="upgrade", aliases=["update"])
     @is_admin()
     async def upgrade(self, ctx):
-        await ctx.send(embed=info_embed("Updating bot...", "This may take a bit"))
+        await ctx.send(embed=info_embed(f"Updating bot on branch `{get_stdout("git symbolic-ref -q HEAD")}`...", "This may take a bit"))
         logger.info("Updating repo & restarting bot...")
         get_stdout("git pull", timeout=20)
         await ctx.send(embed=warning_embed("Restarting bot..."))
