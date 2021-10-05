@@ -60,8 +60,9 @@ class DMCommands(commands.Cog):
 
                 await message.channel.send(
                     embed=info_embed(
-                        f"Emailed a confirmation token to {message.content}",
+                        f"Emailed a confirmation token to **{message.content}**",
                         "Please reply with that token to get verified!",
+                        "If you do not see an email, **check your spam folder**",
                     )
                 )
 
