@@ -7,7 +7,7 @@ from datetime import *
 from cowpy import cow
 from discord.ext import commands
 from pytz import timezone
-
+from pytimeparse import parse
 import config
 from util.checks import *
 from util.func import *
@@ -56,21 +56,8 @@ class ChannelCommands(commands.Cog):
                 await ctx.send(embed=embed)
                 return
 
-        seconds = 0
+        seconds = parse(time)
 
-        # Parse time into seconds
-        if time.lower().endswith("d"):
-            seconds += int(time[:-1]) * 60 * 60 * 24
-            counter = f"{seconds // 60 // 60 // 24} days"
-        if time.lower().endswith("h"):
-            seconds += int(time[:-1]) * 60 * 60
-            counter = f"{seconds // 60 // 60} hours"
-        elif time.lower().endswith("m"):
-            seconds += int(time[:-1]) * 60
-            counter = f"{seconds // 60} minutes"
-        elif time.lower().endswith("s"):
-            seconds += int(time[:-1])
-            counter = f"{seconds} seconds"
         if seconds == 0:
             embed.add_field(
                 name="Warning",
@@ -114,7 +101,7 @@ class ChannelCommands(commands.Cog):
             "https://tenor.com/view/typing-fast-cyber-banana-help-gif-16125910",
             "https://tenor.com/view/mega64-hacking-in-progress-hacker-hacked-hd-gif-16542434",
             "https://tenor.com/view/hacker-game-over-laptop-hacking-hack-gif-17366041",
-            "https://cdn.discordapp.com/attachments/670767796925235252/842257131142250516/breenhacking.webm"
+            "https://cdn.discordapp.com/attachments/670767796925235252/842257131142250516/breenhacking.webm",
         ]
 
         await ctx.send(random.choice(epic_hacking))

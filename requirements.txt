@@ -7,3 +7,4 @@ pytz
 pyutil
 requests
 aiohttp
+pytimeparse
