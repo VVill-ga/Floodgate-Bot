@@ -25,3 +25,7 @@ EMAIL_SERVER = "something.com"
 EMAIL_USERNAME = "something@example.com"
 EMAIL_PASSWORD = "hunter2"
 VALID_EMAIL_DOMAINS = ["example.com"]
+
+CDC_VPN_PRIVATE_KEY_PATH = "/path/to/.pem"
+CDC_VPN_IP = "0.0.0.0"
+CDC_VPN_USERNAME = "notroot"
