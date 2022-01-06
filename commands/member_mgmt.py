@@ -1,5 +1,10 @@
 import discord
 import aiohttp
+import paramiko
+import ipaddress
+import base64
+import shlex
+import configparser
 from discord.ext import commands
 
 import config
@@ -156,6 +161,115 @@ class MemberCommands(commands.Cog):
             embed=error_embed(
                 "Invalid command",
                 "Usage:\n`!gitlab <username>`",
+            )
+        )
+
+    @is_verified()
+    @is_cdc()
+    @commands.command()
+    async def vpn(self, ctx, pubkey=None):
+        if pubkey is None:
+            return await ctx.send(
+                embed=error_embed(
+                    "Missing Public Key",
+                    "Please specify a wireguard public key.\n```\n!vpn pubkeygoeshere\n```",
+                )
+            )
+
+        # Check that the supplied public key is valid base64, forbidding invalid chars
+        try:
+            base64.b64decode(pubkey)
+        except:
+            return await ctx.send(
+                embed=error_embed(
+                    "Invalid Public Key",
+                    "Please specify a valid wireguard public key.\n```\n!vpn pubkeygoeshere\n```",
+                )
+            )
+
+        # Establish an SSH Connection to the CDC VPN machine
+        # https://stackoverflow.com/questions/3586106/perform-commands-over-ssh-with-python
+
+        ssh = paramiko.SSHClient()
+
+        key = paramiko.RSAKey.from_private_key_file(config.CDC_VPN_PRIVATE_KEY_PATH)
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(
+            hostname=config.CDC_VPN_IP, username=config.CDC_VPN_USERNAME, pkey=key
+        )
+
+        # get last configured entry to calculate next free ip
+        _, ssh_stdout, _ = ssh.exec_command("sudo tail -n 5 /etc/wireguard/wg0.conf")
+
+        # use ini parser to get last ip from conf
+        wgconf = configparser.ConfigParser()
+        try:
+            wgconf.read_string(ssh_stdout.read().decode("utf-8"))
+            last_config_ip = wgconf["Peer"]["AllowedIPs"]
+        except Exception as e:
+            print(f"Issue in parsing VPN Config: {str(e)}")
+            return await ctx.send(
+                embed=error_embed(
+                    "Could not parse server VPN configuration",
+                    "Please contact an officer.",
+                )
+            )
+
+        last_ip = ipaddress.ip_address(last_config_ip.split("/32")[0])
+
+        if not last_ip + 1 in ipaddress.ip_network("10.1.2.0/24"):
+            return await ctx.send(
+                embed=error_embed(
+                    "No more IPs available for VPN peers",
+                    "Please contact an officer.",
+                )
+            )
+
+        # We are now good to add the user's pubkey to the wireguard network config
+        # on the vpn host, followed by printing the client config they should use
+        allowed_ip = last_ip + 1
+        user = self.bot.get_user(ctx.author.id)
+        new_conf_entry = "\n".join(
+            [
+                "",
+                f"# {user.display_name}#{user.discriminator}",
+                "[Peer]",
+                "Endpoint = 0.0.0.0:13337",
+                f"AllowedIPs = {allowed_ip}/32",
+                f"PublicKey = {pubkey}",
+            ]
+        )
+
+        # We have to write with echo as the file is root-owned
+        ssh.exec_command(
+            f"echo {shlex.quote(new_conf_entry)} | sudo tee -a /etc/wireguard/wg0.conf"
+        )
+
+        # Run sudo systemctl restart wg-quick@wg0
+        ssh.exec_command("sudo systemctl restart wg-quick@wg0")
+
+        ssh.close()
+
+        await ctx.send(
+            embed=success_embed(
+                f"Key Added Successfully.",
+                "\n".join(
+                    [
+                        "**Enter the following in your local config:**",
+                        "```ini",
+                        "[Interface]",
+                        "PrivateKey = <your private key here>",
+                        "ListenPort = 13337",
+                        f"Address = {allowed_ip}/32",
+                        "DNS = 10.1.20.198",
+                        "",
+                        "[Peer]",
+                        f"PublicKey = {pubkey}",
+                        "AllowedIPs = 10.1.1.0/24, 10.1.0.0/24, 10.1.20.0/24",
+                        f"Endpoint = {config.CDC_VPN_IP}:13337",
+                        "```",
+                    ]
+                ),
             )
         )
 

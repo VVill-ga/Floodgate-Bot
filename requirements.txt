@@ -8,3 +8,4 @@ pyutil
 requests
 aiohttp
 pytimeparse
+paramiko

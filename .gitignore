@@ -8,3 +8,5 @@ commands-old/
 *.swp
 Pipfile
 Pipfile.lock
+venv
+.venv
