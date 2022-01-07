@@ -264,7 +264,7 @@ class MemberCommands(commands.Cog):
                         "DNS = 10.1.20.198",
                         "",
                         "[Peer]",
-                        f"PublicKey = {pubkey}",
+                        f"PublicKey = {config.CDC_VPN_SERVER_PUBKEY}",
                         "AllowedIPs = 10.1.1.0/24, 10.1.0.0/24, 10.1.20.0/24",
                         f"Endpoint = {config.CDC_VPN_IP}:13337",
                         "```",
