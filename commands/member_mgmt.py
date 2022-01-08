@@ -261,7 +261,7 @@ class MemberCommands(commands.Cog):
                         "PrivateKey = <your private key here>",
                         "ListenPort = 13337",
                         f"Address = {allowed_ip}/32",
-                        "DNS = 10.1.20.198",
+                        "DNS = 1.1.1.1",
                         "",
                         "[Peer]",
                         f"PublicKey = {config.CDC_VPN_SERVER_PUBKEY}",
