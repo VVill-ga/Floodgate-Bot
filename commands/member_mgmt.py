@@ -26,7 +26,10 @@ class MemberCommands(commands.Cog):
             return await ctx.send(
                 embed=error_embed(
                     "Invalid command",
-                    "Usage:\n`!role add [role]`\n`!role remove [role]`",
+                    "Usage:\n`!role add [role]`\n`!role remove [role]`\n\n"
+                    + "Valid roles:\n`"
+                    + "`\n`".join(config.ALLOWED_ROLES)
+                    + "`",
                 )
             )
 
