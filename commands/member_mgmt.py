@@ -217,7 +217,9 @@ class MemberCommands(commands.Cog):
         # use ini parser to get last ip from conf
         wgconf = configparser.ConfigParser()
         try:
-            wgconf.read_string(ssh_stdout.read().decode("utf-8"))
+            wg_config = ssh_stdout.read().decode("utf-8")
+            print(f"Read config: {wg_config}")
+            wgconf.read_string(wg_config)
             last_config_ip = wgconf["Peer"]["AllowedIPs"]
         except Exception as e:
             print(f"Issue in parsing VPN Config: {str(e)}")
@@ -230,7 +232,7 @@ class MemberCommands(commands.Cog):
 
         last_ip = ipaddress.ip_address(last_config_ip.split("/32")[0])
 
-        if not last_ip + 1 in ipaddress.ip_network("10.1.2.0/24"):
+        if not last_ip + 1 in ipaddress.ip_network(config.CDC_VPN_IP_RANGE):
             return await ctx.send(
                 embed=error_embed(
                     "No more IPs available for VPN peers",
