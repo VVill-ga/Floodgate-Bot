@@ -197,9 +197,19 @@ class MemberCommands(commands.Cog):
 
         key = paramiko.RSAKey.from_private_key_file(config.CDC_VPN_PRIVATE_KEY_PATH)
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(
-            hostname=config.CDC_VPN_IP, username=config.CDC_VPN_USERNAME, pkey=key
-        )
+        try:
+            ssh.connect(
+                hostname=config.CDC_VPN_IP, username=config.CDC_VPN_USERNAME, pkey=key
+            )
+        except (TimeoutError, paramiko.ssh_exception.AuthenticationException) as e:
+            print(f"Failed to connect to VPN instance at IP: {config.CDC_VPN_IP}. Maybe the host is down or IP has changed.")
+            print(str(e))
+            return await ctx.send(
+                embed=error_embed(
+                   "Failed to connect to OSUSEC VPN",
+                    "Please contact an officer",
+                )
+            )
 
         # get last configured entry to calculate next free ip
         _, ssh_stdout, _ = ssh.exec_command("sudo tail -n 5 /etc/wireguard/wg0.conf")
