@@ -1,7 +1,10 @@
-# OSU Security Club Discord Bot
-This Discord bot verifies email address for your organization in order to federate access to sensitive channels. You can configure multiple valid domains, and what roles require being verified to join. It uses a sqlite3 database to track user status
+# OSU Floodgate (BETA) Discord Bot
+This is a modularily written discord bot for student organizations at Oregon State University to verify that all of their members are assosiated with the university. 
+You can configure multiple valid domains, and what roles require being verified to join. It uses a sqlite3 database to track user status.
 
 It can also restart and upgrade on the fly with just a command. `!upgrade` pulls the latest code from Git and restarts.
+
+This bot was forked from the [Oregon State University Security Club Discord Bot](https://gitlab.com/osusec/discord-bot).
 
 # Requirements
 * Python 3
