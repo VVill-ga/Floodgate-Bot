@@ -90,7 +90,7 @@ class DMCommands(commands.Cog):
             await message.channel.send(
                 embed=error_embed(
                     "Invalid email or token",
-                    "Make sure to provide your OSU email address (`@oregonstate.edu`).",
+                    "Make sure to provide your OSU email address (`ONID@oregonstate.edu`).",
                 )
             )
 

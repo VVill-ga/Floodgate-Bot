@@ -48,10 +48,3 @@ def restart_bot(*args):
     path_to_main_file = os.path.abspath(__file__).replace("util/func.py", "bot.py")
     os.execl(sys.executable, sys.executable, path_to_main_file, *args)
 
-
-async def aws_wait_until(instance, state):
-    # poll instance instead of blocking `instance.wait_until_terminated()`
-    # to allow websocket to continue
-    while instance.state["Name"] != state:
-        await asyncio.sleep(1)
-        instance.reload()
