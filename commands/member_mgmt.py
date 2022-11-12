@@ -1,8 +1,5 @@
 import discord
 import aiohttp
-import paramiko
-import shlex
-import configparser
 from discord.ext import commands
 
 import config

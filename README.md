@@ -1,6 +1,6 @@
 # OSU Floodgate (BETA) Discord Bot
 This is a modularily written discord bot for student organizations at Oregon State University to verify that all of their members are assosiated with the university. 
-You can configure multiple valid domains, and what roles require being verified to join. It uses a sqlite3 database to track user status.
+Copy config.sample.py to config.py and update the values to be accurate to your respective server. It uses a sqlite3 database to track user status.
 
 It can also restart and upgrade on the fly with just a command. `!upgrade` pulls the latest code from Git and restarts.
 

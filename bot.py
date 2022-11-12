@@ -47,7 +47,7 @@ logger.info("Loading commands...")
 for filename in os.listdir("./commands"):
     if filename.endswith(".py"):
         logger.info(f"> {filename}")
-        bot.load_extension(f"commands.{filename[:-3]}")
+        await bot.load_extension(f"commands.{filename[:-3]}")
 
 # Run bot
 if __name__ == "__main__":
